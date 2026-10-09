@@ -2317,12 +2317,14 @@ static void draw_graph(void)
             break;
         case GR_ROLL:
             cv_oy = 0;
-            if (drum_track(t))
-                graph_grid(t, c);                    /* the drum grid stays the drum editor */
-            else if (pr_roll_force)                  /* (tests audit the roll's drawing: this flag picks it) */
-                graph_roll(t, c);
-            else
-                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows (the roll returns as a menu option) */
+            if (pr_roll_force) {                     /* (tests audit the roll's and the grid's drawing) */
+                if (drum_track(t))
+                    graph_grid(t, c);
+                else
+                    graph_roll(t, c);
+            } else {
+                graph_tracker(t, c);                 /* FM-1 TRACKER: vertical rows (drums: the lanes as columns) */
+            }
             break;
         case GR_SCALE:
             graph_scale(t, c);
