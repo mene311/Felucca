@@ -199,6 +199,8 @@ static void pr_bars(const step_t *st, int32_t x, int32_t w, uint16_t c, int acc_
 #define TR_Y0 6
 #define TR_RH 12
 uint8_t pr_roll_force;                              /* tests: draw the piano roll (and its audits) instead of the tracker */
+#define TR_LX 30                                      /* the drum lanes' columns (8 x 24) */
+#define TR_LW 24
 static void graph_tracker(const track_t *t, uint16_t c)
 {
     static const char HEXD[] = "0123456789ABCDEF";
@@ -214,6 +216,43 @@ static void graph_tracker(const track_t *t, uint16_t c)
         first = 16 - rows;
     if (first < 0)
         first = 0;
+    if (drum_track(t)) {                             /* the lanes as columns: BD SD CP CH OH TM RS CB */
+        uint32_t k;
+        for (k = 0; k < NLANE; k++) {
+            int32_t cx = TR_LX + (int32_t)k * TR_LW;
+            GFX_HOOK_ALIGN(cx, 2, cx + TR_LW, 16, AL_HV, "tracker lane header");
+            cv_text_in(cx, 2 + CAP_IN(S, 14), TR_LW, &AF_S, drum_lane_abbr(t, k), T_DIM, T_BG);
+        }
+        for (r = 0; r < rows; r++) {
+            int32_t idx = first + r, y = TR_Y0 + r * TR_RH;
+            uint32_t si = base + (uint32_t)idx, hits, accs;
+            const step_t *st;
+            int on;
+            char nb[4];
+            if (idx >= 16 || si >= len)
+                break;
+            st = &seq_steps(t)[si];
+            on = si == ui.cursor;
+            if (on)
+                cv_frame(1, y - 1, 238, TR_RH - 1, T_THEME);
+            if (song.playing && si == t->seq_idx)
+                cv_rect(1, y, 2, TR_RH - 1, T_ACCENT);
+            fmt_int(nb, (int32_t)si + 1);
+            if (!nb[1]) { nb[1] = nb[0]; nb[0] = '0'; nb[2] = 0; }
+            cv_text_on(6, y + 1, &AF_S, nb, on ? T_THEME : T_DIM, T_BG);
+            hits = step_lanes(st);
+            accs = step_accents(st) & hits;
+            for (k = 0; k < NLANE; k++) {
+                int32_t cx = TR_LX + (int32_t)k * TR_LW;
+                int hit = (hits >> k) & 1u, ac = (accs >> k) & 1u;
+                if (hit)
+                    cv_rect(cx + (TR_LW - 14) / 2, y + 3, 14, 5, ac ? T_ACCENT : T_TEXT);
+                if (on && k == ui.lane)
+                    cv_frame(cx, y - 1, TR_LW - 2, TR_RH - 1, T_THEME);
+            }
+        }
+        return;
+    }
     for (r = 0; r < rows; r++) {
         int32_t idx = first + r, y = TR_Y0 + r * TR_RH;
         uint32_t si = base + (uint32_t)idx;
