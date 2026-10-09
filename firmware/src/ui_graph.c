@@ -223,9 +223,9 @@ static void graph_tracker(const track_t *t, uint16_t c)
             break;
         st = &seq_steps(t)[si];
         on = si == ui.cursor;
-        bg = on ? T_RAISE : T_BG;
+        bg = T_BG;                                   /* (a frame, not a fill: filled rects are lint cells the row's texts must fit) */
         if (on)
-            cv_rrect(1, y - 1, 238, TR_RH - 1, 3, T_RAISE, T_BG);
+            cv_frame(1, y - 1, 238, TR_RH - 1, T_THEME);
         if (song.playing && si == t->seq_idx)
             cv_rect(1, y, 2, TR_RH - 1, T_ACCENT);
         fmt_int(nb, (int32_t)si + 1);                /* the step number, two digits */
