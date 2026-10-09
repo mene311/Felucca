@@ -49,7 +49,7 @@ static uint32_t song_probe(uint32_t *blocks)
     chain_config.row[2] = PROBE_ROW(0, 1);
     if (chain_prepare())
         return 0;
-    while (n < 40000u && (n < 4u || chain.running)) {
+    while (n < SONG_PROBE_BLOCKS && (n < 4u || chain.running)) {
         events_block(32);
         n++;
         h = song_probe_mix(h, (uint32_t)chain.running | (uint32_t)chain.row << 1 | (uint32_t)chain.remaining << 8);
