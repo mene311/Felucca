@@ -16,7 +16,8 @@ Scope is frozen by the requirements it implements.
 - Goal: arrange by repeating, mixing and matching and muting the four existing
   patterns. The MATRIX is the default arrangement surface (ADR-0010). v1 works
   with 32-line patterns (ADR-0011); blank cells inherit, mute is per-cell with
-  gesture B and notes-only scope (ADR-0012).
+  gesture B and notes-only scope (ADR-0012); playback loops from the first row
+  (ADR-0015).
 - Deliverables:
   - Matrix rows: per-track refs (4 bits/track), repeat, per-track mute mask;
     insert / delete / duplicate / move (16 rows, R1).

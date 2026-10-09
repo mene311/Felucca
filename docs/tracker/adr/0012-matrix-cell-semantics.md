@@ -1,5 +1,9 @@
 # ADR-0012: Matrix cell semantics — inherit, mute gesture B, notes-only mute
 
+> **Amended 2026-10-09:** the stop-value question is resolved by
+> [ADR-0015](0015-arrangement-loops.md) — the arrangement loops from the first
+> row, so cells need no stop marker and inherited state resets each pass.
+
 - Status: accepted (2026-10-09) — product call
 - Deciders: mene311
 
@@ -21,15 +25,15 @@ and what mute silences.
 
 ## Consequences
 
-- Because blank inherits, **stopping a track needs an explicit value**: the cell
-  must carry a "stop / none" state distinct from blank (open question Q-M4:
-  confirm the marker and its gesture, e.g. `—`).
+- Because blank inherits, stopping a track needs something to end it: resolved by
+  the looping arrangement ([adr/0015](0015-arrangement-loops.md)) — no stop value
+  in cells; each pass restarts from the first row.
 - Mute is per occurrence; it never alters the referenced pattern.
 - Notes-only muting means release and reverb tails and the track's automation
   continue under a mute — audible only at the edges (long tails, mid-row sound
   changes), predictable in the common case.
-- The matrix screen must show three states per cell: pattern (A–D), stop, and
-  blank-inherit — plus the mute flag.
+- The matrix screen must show: pattern (A–D), blank-inherit, and the mute flag
+  (no stop state — [adr/0015](0015-arrangement-loops.md)).
 
 ## Alternatives
 

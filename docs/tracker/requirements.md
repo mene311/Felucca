@@ -47,8 +47,10 @@ and mute per occurrence while arranging.
   it on the selected cell (gesture B, [adr/0012](adr/0012-matrix-cell-semantics.md));
   a muted track plays **no notes** for that occurrence (its automation keeps
   running) and the referenced content is never altered.
-- R1.4b A **blank cell inherits** the track's previous assignment until changed;
-  stopping a track needs an explicit stop value in the cell (Q-M4).
+- R1.4b A **blank cell inherits** the track's previous assignment **within a
+  pass**. The arrangement **loops from the first row** and inherited state resets
+  each pass (tracks unassigned in the first row are silent until first assigned);
+  no stop value exists in cells ([adr/0015](adr/0015-arrangement-loops.md)).
 - R1.5 Each row MUST carry a repeat count (existing range 1..16; extending to
   1..255 is allowed if free).
 - R1.6 Row operations MUST include insert, delete, duplicate (alias), move
@@ -58,7 +60,8 @@ and mute per occurrence while arranging.
   projects still load; 32 is a default, not a cap —
   [adr/0011](adr/0011-v1-pattern-length.md)).
 - R1.7 References are aliases: rows sharing a pattern share content; editing the
-  pattern changes every row that uses it.
+  pattern changes every row that uses it. Playback loops from the first row until
+  stopped.
 - R1.8 **Acceptance**: a round-trip save/load of a matrix song; two rows sharing
   one pattern both change when it changes; a muted track is silent for that row
   only; a mixed row plays each track from its own referenced pattern; host tests
