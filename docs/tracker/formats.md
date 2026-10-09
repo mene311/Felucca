@@ -30,34 +30,31 @@ Storage layout today (`storage.c`):
   explicit size field (as today) or move to a counted multi-sector record —
   decide with FUN10.
 
-## FUN10 sketch (to be finalised in phase 1)
+## FUN10 sketch (MVP: matrix rows)
 
-Proposed layout (all little-endian, as today; exact offsets pinned by a
-`_Static_assert` like the current formats):
+The MVP changes **only the chain block**; everything else keeps the FUN9 layout
+and the record stays 3,648 bytes with the FM6 patches at `PROJ_FM6_OFF` (3120).
 
 ```
 magic u32 (next free tag after "FUN9" 0x46554E39: use "FUNA" 0x46554E41)
-size/version u32
-globals g[G_COUNT].i16   select, parts, phys, flags
-per track ×4:
-  p[P_COUNT].i16
-  engine u8, preset u8
-  step[NSTEP] packed: 12 B each (notes, time, flags, vel, chance, ratchet,
-                                hits/acc, inst, pan, delay)
-chain: count u8, rsv[3]; rows ×64 { slot u8, repeat u8 }          (phase 1)
-       later ×64 { slot[4] u8, repeat u8, mute u8 }               (phase 4)
-motion: per track { count u16, on u8, rsv; events ×N {place u8, param u8, value i16} }
-FM6 patches ×4 ×128
-name[?]  checksum u32
+(rest of the record: header, globals, 4 tracks, steps packed 9 B, motion,
+ FM6 patches, name, checksum — unchanged)
+
+chain: count u8, rsv[3];  rows x16:
+       refs u16    /* 4 nibbles: per-track pattern 0..3 (=A..D), 15 = empty */
+       repeat u8   /* 1..16 for the MVP */
+       mute u8     /* bit per track */
+     => 68 B total; FUN9's chain was 36 B; the +32 B fit the record's 48 spare
+        bytes, so the size and every offset after it stay put.
 ```
 
-- Size budgeting (single pattern): steps 4×64×12 = 3,072 B; params/patches as
-  today; motion 4×256×4 ≈ 4 KB → a full record is ~8–9 KB, i.e. **three 4 KB
-  sectors** per copy, or the steps+commands-only split from
-  [adr/0003](adr/0003-pattern-pool-and-storage.md).
-- Alternative (recommended by the ADR): the **pattern pool stores steps +
-  commands only** (~3–5 KB), sounds stay in one song-wide state block. This keeps
-  one pattern inside one sector pair and removes per-pattern sound duplication.
+- Conversion FUN9 → FUNA: `{slot, repeat}` becomes four equal refs, mute 0.
+- Phase 2 grows the packed step (9 → 12 B: instrument, pan, delay) and the
+  motion block (per-track stores) — a **size change** at that point, with its own
+  format revision and `_Static_assert`s.
+- Size budgeting (phase 2, for orientation): steps 4×64×12 = 3,072 B; motion
+  4×256×4 ≈ 4 KB → a full record is ~8–9 KB, three 4 KB sectors per copy, or the
+  steps+commands-only split from [adr/0003](adr/0003-pattern-pool-and-storage.md).
 
 ## SysEx protocol (`web/EDITOR_PROTOCOL.md`)
 

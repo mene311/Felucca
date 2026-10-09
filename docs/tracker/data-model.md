@@ -78,21 +78,25 @@ Option A — **full records** (current semantics): one `FUN10` record per patter
 3.6 KB class. Option B — **steps+commands only**, sounds song-wide: ~2.3 KB +
 commands per pattern. See [adr/0003](adr/0003-pattern-pool-and-storage.md).
 
-### 4. Order list (phase 1/4)
+### 4. Matrix rows (MVP, phase 1)
 
 ```c
-/* phase 1: 64 whole-pattern refs */
-typedef struct { uint8_t slot, repeat; } chain_row_t;              /* 2 B */
-typedef struct { uint8_t count, rsv[3]; chain_row_t row[64]; } chain_config_t;  /* 132 B */
-
-/* phase 4: per-track block refs + mute mask */
-typedef struct { uint8_t slot[4]; uint8_t repeat; uint8_t mute; } chain_row_t;  /* 6 B */
-typedef struct { uint8_t count, rsv[3]; chain_row_t row[64]; } chain_config_t;  /* 388 B */
+/* refs: 4 nibbles, one per track: 0..3 = pattern A..D, 15 = empty (Q-M4);
+ * values 4..14 are free for a larger pool later. mute: one bit per track. */
+typedef struct { uint16_t refs; uint8_t repeat; uint8_t mute; } chain_row_t;    /* 4 B */
+typedef struct { uint8_t count, rsv[3]; chain_row_t row[16]; } chain_config_t;  /* 68 B */
 ```
 
-Project record growth: FUN9 chain block is 36 B; 132 B (+96) fits within the
-48 spare bytes? No — 132-36 = +96 > 48 → **new format version required** (FUN10)
-or re-use of the reserved areas with a version bump. Decide in phase 1.
+- Growth: 36 B → 68 B = **+32 B**, inside the record's **48 spare bytes** → the
+  `FUNA` record keeps its 3,648-byte size and the FM6 patch offset.
+- A row is an alias of the referenced patterns' track content; editing a pattern
+  changes every row that references it. Mute never alters content.
+- Playback: for each track, the row's referenced pattern supplies steps + timing;
+  a muted track plays nothing for that occurrence.
+- Commands (motion) with mixed rows: the live store merges per-track events from
+  each referenced pattern; the shared 64-record capacity is the MVP ceiling
+  (phase 2 raises it per track). The merge rule is specified with the
+  implementation (Q-M3).
 
 ### 5. Instruments (phase 3)
 
@@ -136,11 +140,12 @@ Dual copies double the numbers.
 
 ## Capacity summaries (proposed)
 
-| Resource | Today | Phase 1 | Phase 2 | Phase 4 |
+| Resource | Today | Phase 1 (MVP) | Phase 2 | Phase 4 |
 | --- | --- | --- | --- | --- |
-| Unique patterns | 4 | 8 (16 steps-only) | 8–16 | 8–16 |
-| Order-list rows | 16 | 64 | 64 | 64 (block refs) |
-| Repeat per row | 1..16 | 1..255 | 1..255 | 1..255 |
+| Unique patterns | 4 | 4 | 4 | 8–16 |
+| Order-list rows | 16 | 16 | 16 | 64 |
+| Row shape | `{slot, repeat}` | `{refs, repeat, mute}` | same | same |
+| Repeat per row | 1..16 | 1..16 | 1..16 (255 optional) | 1..255 |
 | Commands per pattern | 64 shared | 64 shared | 256/track | 256/track |
-| Step fields | note/vel/time/flags/hit/acc/chance | + inst/pan/delay | same | same |
+| Step fields | note/vel/time/flags/hit/acc/chance | unchanged | + inst/pan/delay | same |
 | Pattern length | 64 | 64 | 64 | 64 (128 in phase 5) |

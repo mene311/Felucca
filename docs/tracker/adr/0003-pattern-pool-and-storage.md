@@ -1,5 +1,9 @@
 # ADR-0003: Pattern pool and storage shape
 
+> **MVP note (2026-10-09):** the pool stays at **4 patterns** for the MVP
+> ([ADR-0009](0009-mvp-pattern-matrix.md)); this ADR applies to phase 4, where
+> capacity is revisited only after the matrix is accepted.
+
 - Status: proposed (2026-10-09) — needs Q1/Q3 resolution
 - Deciders: mene311
 

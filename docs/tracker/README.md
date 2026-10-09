@@ -15,10 +15,10 @@ decision log. **Code follows these documents — not the other way round.**
 | --- | --- | --- |
 | 0 | Design docs (this set) | draft — under review |
 | 0 | Dev loop (phone host builds, laptop toolchain, browser emulator) | **done** |
-| 1 | Order list ~64 rows, pattern pool 8 (format FUN10, protocol, UI) | not started |
+| 1 (MVP) | **Pattern matrix over the 4 existing patterns**: per-track refs, repeat, per-occurrence mute, MATRIX screen ([adr/0009](adr/0009-mvp-pattern-matrix.md)) | not started |
 | 2 | Tracker view + hex command columns over the motion system | not started |
 | 3 | Per-step instrument byte | not started |
-| 4 | Pattern-matrix block references + per-occurrence mute | not started |
+| 4 | Capacity: pattern pool 8–16, order list 64 rows | not started |
 | 5 | `DIV` extensions (1/64, 1/128) + `NSTEP` 128 | not started |
 
 ## Documents

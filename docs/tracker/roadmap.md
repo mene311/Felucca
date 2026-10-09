@@ -1,80 +1,81 @@
 # Roadmap
 
-Status: draft. Each phase ships independently, on a branch, and is accepted
-before the next starts. Phase scope is frozen by the requirements it implements.
+Status: draft. Phases ship in order; each is accepted before the next starts.
+Scope is frozen by the requirements it implements.
 
-## Phase 0 — Foundations (this doc set)
+## Phase 0 — Foundations
 
 - Deliverables: `docs/tracker/*`, dev loop (host builds on the phone, toolchain
   and emulator on the laptop), the `aa_raster.py` no-Raqm fallback.
-- Exit: documents reviewed; an unmodified fork builds (`felucca.fwsc`) and the
-  emulator passes `emu_test.mjs`.
-- State: documents in review; everything else **done**.
+- Exit: documents reviewed; unmodified fork builds (`felucca.fwsc`); emulator
+  passes `emu_test.mjs`.
+- State: docs in review; everything else **done**.
 
-## Phase 1 — Order list and pattern pool
+## Phase 1 (MVP) — Pattern matrix over four patterns
 
-- Goal: long arrangements from a small pool.
+- Goal: arrange by repeating, mixing and matching and muting the four existing
+  patterns.
 - Deliverables:
-  - 64-row order list (`chain_config_t`), repeat 1..255, row operations in the UI.
-  - Pool of 8 slots (letters A–H); `G_SLOT` range; storage map either 8 × 1 sector
-    in place or 8 × 2 sectors with a 32 KB reclaim from the sample area.
-  - FUN10 record + conversions; protocol: order-list ops + pool slot range +
-    new capability tags.
-  - Resolve Q3 (where the extra storage lives).
-- Exit: R1 + R2 accepted; host tests green; `ui_render` clean; save/load
-  round-trip with a corrupt-sector recovery; documentation updated.
+  - Matrix rows: per-track refs (4 bits/track), repeat, per-track mute mask;
+    insert / delete / duplicate / move (16 rows, R1).
+  - MATRIX screen: 4 track columns × scrolling rows; cell edit, mute toggle,
+    repeat; alias/repeat markers (R2).
+  - Format `FUNA`: same 3,648-byte size, rows packed 4 B into the record's 48
+    spare bytes; exact FUN9 conversion (R3).
+  - Protocol: order-list read/write ops + capability tag (R3).
+- Exit: R1–R3 accepted; conversion and corrupt-record tests green; UI lint and
+  alignment clean; a demo song built from 4 patterns with mixed rows and mutes.
 
-## Phase 2 — Tracker view and command columns
+## Phase 2 — Tracker view and commands
 
 - Goal: type notes and effects row by row.
-- Deliverables:
-  - TRACKER screen (see [ui-input.md](ui-input.md)) with cursor, scrolling,
-    hex entry, keycap hints.
-  - Per-track command stores (≥ 256 records/track/pattern), lock/event semantics,
-    two command columns per row.
-  - Per-row **pan** and **delay** fields (R4); velocity column shown.
-  - EDIT-layer clipboard: copy / paste / insert / clear row.
-  - Protocol: motion scope change (capability-tagged), step write extension.
-- Exit: R3 + R4 accepted; timing tests frame-accurate; golden playback of a
-  scripted pattern documented; UI lint/alignment clean.
+- Deliverables: TRACKER screen (cursor, hex entry, keycap hints); per-track
+  command stores (≥ 256/track, lock/event semantics, two command columns);
+  velocity/pan/delay columns; EDIT-layer clipboard; motion merge rule for
+  mixed-ref rows documented and implemented; protocol and format updates.
+- Exit: R4 accepted; frame-accurate delay test; golden playback of a scripted
+  pattern; UI lint/alignment clean.
 
 ## Phase 3 — Instruments per row
 
 - Goal: `C-4 XX` — any instrument on any row.
 - Deliverables: instrument table (~65 factory + 32 user), per-row `inst` byte,
   apply-before-note-on, cross-engine fade, protocol + format updates.
-- Exit: R5 accepted; documented caveat about track-level parameters tested (tail
-  morph behaviour verified); no CPU budget regression.
+- Exit: R5 accepted; documented tail-morph caveat verified; no CPU budget
+  regression.
 
-## Phase 4 — Pattern matrix
+## Phase 4 — Capacity
 
-- Goal: arrange at block level; per-occurrence mute.
-- Deliverables: `chain_row_t {slot[4], repeat, mute}`; MATRIX screen; clone-fill
-  and alias operations; repeated-slot indicator.
-- Exit: R7 accepted; alias edits propagate; mute never alters sources.
+- Goal: more patterns and longer arrangements, once the matrix is proven.
+- Deliverables: pool 8–16 slots, order list 64 rows; storage decision (Q3)
+  resolved per [adr/0003](adr/0003-pattern-pool-and-storage.md); protocol and
+  format updates.
+- Exit: R6 accepted; pool round-trip and recovery tests; flash map documented
+  and within budget.
 
-## Phase 5 — Timing extensions
+## Phase 5 — Timing
 
 - Goal: breakcore granularity.
 - Deliverables: `DIV` 1/64, 1/128, 32T, 64T; `NSTEP` 128 (banks, protocol index,
-  motion `place`), storage per the chosen model.
-- Exit: R6 accepted; a 64-bar stress song at 1/128 plays without drift
-  (host test), existing projects unchanged (round-trip golden).
+  motion `place` encoding — today `track<<6 | step`); storage per the chosen
+  model.
+- Exit: R7 accepted; 64-bar stress song at 1/128 without drift (host test);
+  existing projects unchanged (round-trip golden).
 
 ## Risks
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| RAM is nearly full (`.data+.bss` ~7 KB spare) | pattern cache/changes don't fit | on-demand pool loading; small-first phases; measure each change against the linker report |
-| Flash map conflicts (OTA staging, samples) | bricking risk if overlapped | keep the map table authoritative; never touch OTA staging; validate with `fm1_install.py` dry runs |
-| UI space (240×240) | unreadable tracker | prototype screens via `ui_render` before implementing input |
-| Protocol drift (editors) | third-party tools break | append-only ops, capability tags, same-commit doc updates |
-| Upstream divergence | merge pain as Felucca evolves | keep changes surgical; rebase on `upstream/main` each phase; ADRs record rationale |
-| Scope creep | nothing ships | phases frozen by requirements; later ideas go to the ADR/open-questions list |
+| RAM nearly full (`.data+.bss` ~7 KB spare) | new features don't fit | MVP consumes no RAM growth (spare bytes only); measure every change against the linker report |
+| Matrix UI on a 240×240 screen | unusable arrangement screen | prototype via `ui_render` before implementing input; 4 columns is the simplest possible grid |
+| Motion merge limits with mixed rows (64 records shared) | dense songs drop commands | documented merge rule in MVP; per-track capacity in phase 2 |
+| Flash map conflicts | bricking risk | keep the map table authoritative; never touch OTA staging; validate installs with `fm1_install.py` dry runs |
+| Upstream divergence | merge pain | surgical changes, rebase each phase, ADRs record rationale |
+| Scope creep | nothing ships | phases frozen by requirements; new ideas go to open questions |
 
 ## Open questions
 
-From [requirements.md](requirements.md) Q1–Q4: pattern record shape, `NSTEP`
-banks/protocol encoding, storage location, block refs timing. From
-[ui-input.md](ui-input.md) Q-U1–Q-U4: row pitch, kind marker, OCT paging, matrix
-gestures.
+- Q-M1..Q-M4 ([requirements.md](requirements.md)): row count for the MVP, matrix
+  gestures, mute scope, empty-cell semantics.
+- Q1–Q4 for later phases: pattern record shape, `NSTEP` banks, storage location;
+  block-ref timing answered by [adr/0009](adr/0009-mvp-pattern-matrix.md).

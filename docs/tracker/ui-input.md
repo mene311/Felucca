@@ -11,9 +11,39 @@ ever required.
 | TRACKER | new (phase 2) | vertical row list: note, instrument, velocity, command columns; cursor |
 | POOL | phase 1 (replaces PROJECT) | 8–16 slots, letters A–H; save / load / clone / erase / name |
 | SONG (order list) | extend (phase 1) | 64 rows, slot letter + repeat; insert / delete / duplicate / move |
-| MATRIX | new (phase 4) | rows × 4 tracks of block refs; mute per block |
+| MATRIX | new (MVP, phase 1) | rows × 4 track columns of pattern refs; mute per occurrence; repeat |
 | MIXER | exists | per-track LEVEL / PAN / REV / MUTE + meters |
 | STEP / PATTERN / PATTERNS / AUTO LIST / CHANCE | exist | unchanged pages; PATTERN keeps LEN/DIV/SWG/GATE |
+
+## MATRIX screen (MVP)
+
+```
+┌ header ~30 px ─────────────────────────────┐
+│ SONG  16 rows   ▶ 124                      │
+├ grid ~170 px (10 rows x 16 px) ────────────┤
+│ 01   A  A  A  A   x4                       │
+│ 02 ▸ A  B  A  ·   x2      ← mixed row      │
+│ 03  ×C  ×C ·  ·   x1      ← muted + empty  │
+│ …                                          │
+├ footer ────────────────────────────────────┤
+│ hints: “A–D set · C# clear · EDIT mute”    │
+└────────────────────────────────────────────┘
+```
+
+- Columns = the four tracks; a cell shows the pattern letter (`A`–`D`) or `·`
+  for empty, dimmed when muted; the row gutter shows the repeat (`xN`).
+- Repeated/aliased content is marked (e.g. shared-pattern rows highlighted) so
+  structure is visible at a glance.
+- **Navigation**: F# / A# move between cells, G# / D# move rows (hold repeats).
+- **Set**: white keys 1–4 pick patterns A–D for the selected cell (only four
+  values exist in the MVP); C# clears the cell.
+- **Mute**: toggle for the selected cell — gesture TBD (Q-M2); a dedicated black
+  key or a held EDIT modifier are the candidates.
+- **Repeat**: KNOB 1 scrubs the selected row's repeat (a number, not typed text).
+- **Row ops** (insert / delete / duplicate / move): EDIT layer on the selected
+  row, mirroring SEQ TOOLS.
+- OCT+ / OCT− keep their platform meaning (confirm / back) unless the review
+  decides otherwise (Q-M2).
 
 ## TRACKER screen layout (240 × 240)
 
@@ -105,5 +135,5 @@ as a fallback and for auditioning. No entry depends on them.
 - Q-U2. Where "kind" (lock/event) lives in the row display.
 - Q-U3. Whether OCT+/− become row paging on the tracker screen or stay
   confirm/cancel (platform idiom).
-- Q-U4. Matrix screen: how many columns/rows fit readably, and which gesture
-  selects blocks (EDIT layer vs a dedicated modifier).
+- Q-U4. Matrix gestures (cell select, mute toggle, row ops) — see Q-M2 in
+  [requirements.md](requirements.md).

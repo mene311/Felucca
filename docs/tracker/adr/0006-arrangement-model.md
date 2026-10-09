@@ -1,5 +1,11 @@
 # ADR-0006: Arrangement model — order list now, blocks later
 
+> **Amended 2026-10-09:** the phasing is superseded by
+> [ADR-0009](0009-mvp-pattern-matrix.md) — the matrix (block refs + mute) is the
+> MVP over the existing four patterns; the order list stays 16 rows for now. The
+> data-model decision below (rows as per-track block references, aliases by
+> shared references, playback borrows stored content) stands.
+
 - Status: accepted (2026-10-09)
 - Deciders: mene311
 
