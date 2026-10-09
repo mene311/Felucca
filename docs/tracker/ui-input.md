@@ -11,7 +11,7 @@ ever required.
 | TRACKER | new (phase 2) | vertical row list: note, instrument, velocity, command columns; cursor |
 | POOL | phase 1 (replaces PROJECT) | 8–16 slots, letters A–H; save / load / clone / erase / name |
 | SONG (order list) | extend (phase 1) | 64 rows, slot letter + repeat; insert / delete / duplicate / move |
-| MATRIX | new (MVP, phase 1) | rows × 4 track columns of pattern refs; mute per occurrence; repeat |
+| MATRIX | **delivered** (v1.x) | sections × 4 track columns: slot letters, `-` silent, cursor, repeats, play mark (GLO's first page) |
 | MIXER | exists | per-track LEVEL / PAN / REV / MUTE + meters |
 | STEP / PATTERN / PATTERNS / AUTO LIST / CHANCE | exist | unchanged pages; PATTERN keeps LEN/DIV/SWG/GATE |
 

@@ -19,8 +19,15 @@ the arrangement **loop** (ADR-0015), and the **FM-1 TRACKER** name
 (splash/ABOUT/version `v1.4-tr1`). Host tests green (`tests/run_tests.sh`), the
 browser emulator rebuilt and served.
 
-Still to do for the hardware milestone: the MATRIX bird's-eye screen and row
-move/reorder (renders for sign-off first), then the flash + 3:30 hardware test.
+Delivered since: the **MATRIX bird's-eye screen** — a new GLO-family page
+(tracker-first: GLO opens it, a second tap opens SONG) drawing sections x tracks
+with the slot letters, `-` silent cells, the cursor, repeats and the play mark;
+it edits the same data with the same knobs (SEC/TRACK/PAT/REPS). Renders cover
+the empty and a mixed 4-section grid (0 lint findings, 0 misalignments); host
+tests updated for the tracker-first GLO behaviour.
+
+Still to do for the hardware milestone: row move/reorder, then the flash and the
+3:30 hardware test.
 
 - Goal: arrange by repeating, mixing and matching and muting the four existing
   patterns. The MATRIX is the default arrangement surface (ADR-0010). v1 works
