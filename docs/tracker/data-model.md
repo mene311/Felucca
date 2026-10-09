@@ -79,25 +79,19 @@ Option A — **full records** (current semantics): one `FUN10` record per patter
 3.6 KB class. Option B — **steps+commands only**, sounds song-wide: ~2.3 KB +
 commands per pattern. See [adr/0003](adr/0003-pattern-pool-and-storage.md).
 
-### 4. Matrix rows (MVP, phase 1)
+### 4. Matrix rows — provided by upstream 1.4
 
-```c
-/* refs: 4 nibbles, one per track: 0..3 = pattern A..D, 15 = empty (Q-M4);
- * values 4..14 are free for a larger pool later. mute: one bit per track. */
-typedef struct { uint16_t refs; uint8_t repeat; uint8_t mute; } chain_row_t;    /* 4 B */
-typedef struct { uint8_t count, rsv[3]; chain_row_t row[16]; } chain_config_t;  /* 68 B */
-```
+`chain_row_t { uint8_t slot[NTRK]; uint8_t repeat; }` already gives per-track
+pattern selection per section, with `CHAIN_SILENT` ("-") as the silent value;
+a new section copies the previous one (inherit-on-create). v1 deltas:
 
-- Growth: 36 B → 68 B = **+32 B**, inside the record's **48 spare bytes** → the
-  `FUNA` record keeps its 3,648-byte size and the FM6 patch offset.
-- A row is an alias of the referenced patterns' track content; editing a pattern
-  changes every row that references it. Mute never alters content.
-- Playback: for each track, the row's referenced pattern supplies steps + timing;
-  a muted track plays nothing for that occurrence.
-- Commands (motion) with mixed rows: the live store merges per-track events from
-  each referenced pattern; the shared 64-record capacity is the MVP ceiling
-  (phase 2 raises it per track). The merge rule is specified with the
-  implementation (Q-M3).
+- **Loop** the arrangement ([adr/0015](adr/0015-arrangement-loops.md)).
+- **Move / reorder** sections (upstream has add and delete).
+- **Mute policy**: "-" silences but forgets which pattern was there; a mute flag
+  that preserves the reference is the open choice
+  ([adr/0012](adr/0012-matrix-cell-semantics.md)). Rows can be packed to make
+  room: slots 0..4 (3 bits each = 12 bits) + repeat (4 bits) + mute (4 bits) =
+  3 bytes/row vs 5 today — saving 32 bytes of the 80-byte chain block.
 
 ### 5. Instruments (phase 3)
 

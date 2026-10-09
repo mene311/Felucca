@@ -30,31 +30,18 @@ Storage layout today (`storage.c`):
   explicit size field (as today) or move to a counted multi-sector record —
   decide with FUN10.
 
-## FUN10 sketch (MVP: matrix rows)
+## FUN10 is upstream's (Felucca 1.4)
 
-The MVP changes **only the chain block**; everything else keeps the FUN9 layout
-and the record stays 3,648 bytes with the FM6 patches at `PROJ_FM6_OFF` (3120).
+Upstream 1.4 shipped `FUNA` (FUN10): 104 parameters, 128 motion records of
+3 bytes, per-track chain slots, and a **3,840-byte record that exactly fills the
+storage payload** (`ST_PAYLOAD_MAX`). This fork inherits it
+([adr/0016](adr/0016-rebase-on-1.4.md)); the next free tag here is **`FUNB`**
+(0x46554E42).
 
-```
-magic u32 (next free tag after "FUN9" 0x46554E39: use "FUNA" 0x46554E41)
-(rest of the record: header, globals, 4 tracks, steps packed 9 B, motion,
- FM6 patches, name, checksum — unchanged)
-
-chain: count u8, rsv[3];  rows x16:
-       refs u16    /* 4 nibbles: per-track pattern 0..3 (=A..D), 15 = empty */
-       repeat u8   /* 1..16 for the MVP */
-       mute u8     /* bit per track */
-     => 68 B total; FUN9's chain was 36 B; the +32 B fit the record's 48 spare
-        bytes, so the size and every offset after it stay put.
-```
-
-- Conversion FUN9 → FUNA: `{slot, repeat}` becomes four equal refs, mute 0.
-- v2 grows the packed step (9 → 12 B: instrument, pan, delay) and the
-  motion block (per-track stores) — a **size change** at that point, with its own
-  format revision and `_Static_assert`s.
-- Size budgeting (phase 2, for orientation): steps 4×64×12 = 3,072 B; motion
-  4×256×4 ≈ 4 KB → a full record is ~8–9 KB, three 4 KB sectors per copy, or the
-  steps+commands-only split from [adr/0003](adr/0003-pattern-pool-and-storage.md).
+v1 additions need no format change (loop is runtime; the mute flag, if chosen,
+fits by packing rows: 3 B/row saves 32 B of the 80 B chain block). v2 grows the
+packed step (instrument, pan, delay) and the motion block (per-track stores) —
+a size change with its own `FUNB` revision and `_Static_assert`s.
 
 ## SysEx protocol (`web/EDITOR_PROTOCOL.md`)
 

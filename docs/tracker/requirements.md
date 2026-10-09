@@ -34,38 +34,45 @@ and mute per occurrence while arranging.
 - N3. New engines or DSP work beyond what the features need.
 - N4. Breaking SysEx changes for existing editors.
 
-## v1 (MVP) — Pattern matrix over four patterns
+## v1 (MVP) — Pattern matrix: remaining deltas
+
+> **Re-based on Felucca 1.4 ([adr/0016](adr/0016-rebase-on-1.4.md)):** upstream
+> already provides per-track section slots, `CHAIN_SILENT` (-), repeats,
+> add/delete and inherit-on-create, plus SONG-page editing. The requirements
+> below are what the fork adds; *(upstream)* marks what is kept for context.
 
 ### R1 — Matrix rows
 
-- R1.1 The pattern pool stays **4 patterns (A–D)**; no storage or pool changes.
-- R1.2 Each song row MUST reference, **per track**, one of the 4 patterns
-  (whole-pattern reference = all four refs pointing at the same pattern).
-- R1.3 Rows MUST support **mix and match**: a row may take track 1 from pattern A,
-  track 2 from C, and so on.
-- R1.4 Each row MUST carry a **per-track mute**: a dedicated black key toggles
-  it on the selected cell (gesture B, [adr/0012](adr/0012-matrix-cell-semantics.md));
-  a muted track plays **no notes** for that occurrence (its automation keeps
-  running) and the referenced content is never altered.
-- R1.4b A **blank cell inherits** the track's previous assignment **within a
-  pass**. The arrangement **loops from the first row** and inherited state resets
-  each pass (tracks unassigned in the first row are silent until first assigned);
-  no stop value exists in cells ([adr/0015](adr/0015-arrangement-loops.md)).
-- R1.5 Each row MUST carry a repeat count (existing range 1..16; extending to
-  1..255 is allowed if free).
-- R1.6 Row operations MUST include insert, delete, duplicate (alias), move
-  up/down, and set repeat. Row count stays 16 for the MVP (a larger list is a
-  later capacity release; still open for v1, Q-M1).
+- R1.1 The pattern pool stays **4 patterns (A–D)** *(upstream)*; no storage or
+  pool changes.
+- R1.2 Sections reference, per track, one of the 4 patterns or the silent value
+  *(upstream: `slot[NTRK]`, `CHAIN_SILENT`)*.
+- R1.3 Mix and match: a section may take track 1 from A, track 2 from C, and so
+  on *(upstream)*.
+- R1.4 **Mute policy (open):** upstream's `-` silences a track in a section but
+  forgets which pattern it played. Decide whether v1 adds a **mute flag** that
+  preserves the reference (gesture B on the MATRIX screen,
+  [adr/0012](adr/0012-matrix-cell-semantics.md)); scope stays **notes only**.
+- R1.4b New sections copy the previous one *(upstream)*; **playback loops from
+  the first section** and each track's state resets per pass
+  ([adr/0015](adr/0015-arrangement-loops.md)).
+- R1.5 Repeat per section, 1..16 *(upstream)*.
+- R1.6 Add/delete/repeat *(upstream)*; **move/reorder** is ours. Row count
+  stays 16 for v1 — the 3:30 acceptance fits with room to spare (16 x 16 x 4 s
+  ~ 17 minutes at 32 lines, 1/16, 120 BPM).
 - R1.9 v1 works with **32-line patterns** as the default (existing 64-step
   projects still load; 32 is a default, not a cap —
   [adr/0011](adr/0011-v1-pattern-length.md)).
 - R1.7 References are aliases: rows sharing a pattern share content; editing the
   pattern changes every row that uses it. Playback loops from the first row until
   stopped.
-- R1.8 **Acceptance**: a round-trip save/load of a matrix song; two rows sharing
-  one pattern both change when it changes; a muted track is silent for that row
-  only; a mixed row plays each track from its own referenced pattern; host tests
-  (chain, project, protocol) green; `ui_render` lint and alignment clean.
+- R1.8 **Acceptance**: a **3:30 song built from the 4 patterns at 32 lines**
+  plays on hardware; the arrangement **loops from the first section**; a mixed
+  section plays each track from its own slot; two sections sharing a pattern
+  both change when it changes; host tests green; `ui_render` clean.
+- R1.10 **Loop** ([adr/0015](adr/0015-arrangement-loops.md)): playback wraps to
+  the first section instead of stopping (upstream stops), resetting each track's
+  state per pass.
 
 ### R2 — MATRIX screen
 
