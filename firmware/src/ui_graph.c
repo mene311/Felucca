@@ -1085,6 +1085,11 @@ static uint32_t graph_signature(void)
             h = (h ^ chord_last[song.sel].note[i]) * 16777619u;
         h ^= (uint32_t)t->engine * 389u;             /* (MONO and kits follow the sounding engine) */
     }
+    if (pg->graph == GR_MATRIX) {                    /* the grid: the cursor, the sections, the play mark */
+        h ^= ui.song_row * 40503u + chain_config.count * 7919u + ui.song_trk * 3571u;
+        h = fnv(h, chain_config.row, sizeof chain_config.row);
+        h ^= chain.running ? (chain.row + 1u) * 104729u : 0u;
+    }
     if (pg->graph == GR_SONG) {
         h ^= ui.song_row * 40503u + chain_config.count * 7919u + ui.song_trk * 3571u;
         h = fnv(h, chain_config.row, sizeof chain_config.row);
@@ -1432,6 +1437,63 @@ static void graph_events(void)
     }
 }
 /* project slots: the name (none: USED) / EMPTY, the selected one filled */
+/* MATRIX (FM-1 TRACKER, v1.x): the sections down the rows, the four tracks across, one cell per
+ * (section, track): the slot letter (A..D) or "-" (silent), the cursor cell framed, the playing
+ * section on the play mark, the repeats at the right. The knobs edit it as on SONG
+ * (SEC / TRACK / PAT / REPS), so both pages share the data and the messages. */
+#define MX_GUT 26                                    /* the section number + play mark column */
+#define MX_CW 36                                     /* one track cell */
+#define MX_RH 20                                     /* the row pitch */
+static void graph_matrix(void)
+{
+    const int32_t x0 = 6, y0 = 20, rh = MX_RH;
+    int32_t rows = ((int32_t)graph_h() - y0 - 4) / rh, first, i;
+    uint32_t k;
+    char b[8];
+    if (rows < 1)
+        rows = 1;
+    first = (int32_t)ui.song_row > rows / 2 ? (int32_t)ui.song_row - rows / 2 : 0;
+    if (first + rows > (int32_t)CHAIN_ROWS)
+        first = (int32_t)CHAIN_ROWS - rows;
+    if (first < 0)
+        first = 0;
+    if (!chain_config.count) {                       /* empty: what the first turn does (K3 adds, copying) */
+        panel_note("SECTIONS x TRACKS", "[K3] ADD SECTION", 0);
+        return;
+    }
+    for (k = 0; k < NTRK; k++)                       /* the four tracks' cushions */
+        cv_trk(x0 + MX_GUT + (int32_t)k * MX_CW + (MX_CW - 16) / 2, 2, 16, k, T_MID, T_BG);
+    cv_text_on(x0 + MX_GUT + 4 * MX_CW + 6, 5, &AF_S, "REPS", T_DIM, T_BG);
+    for (i = first; i < first + rows; i++) {
+        int32_t ry = y0 + (i - first) * rh;
+        uint32_t s;
+        int sel_row = i == (int32_t)ui.song_row;
+        if ((uint32_t)i > chain_config.count)
+            break;
+        if ((uint32_t)i == chain_config.count) {     /* + ADD (as SONG; the section copies the one before) */
+            GFX_HOOK_ALIGN(x0, ry, 232, ry + rh - 3, AL_HV, "matrix + ADD centred");
+            cv_text_in(x0, ry + 4, 232, &AF_S, "+ ADD SECTION", sel_row ? T_THEME : T_DIM, T_BG);
+            break;
+        }
+        fmt_int(b, i + 1);
+        cv_text_on(x0, ry + 4, &AF_S, b, sel_row ? T_THEME : T_MID, T_BG);
+        if (chain.running && (uint32_t)i == chain.row)
+            cv_icon_on(x0 + 15, ry + 4, 12, ICON_X_RIGHT, T_ACCENT, T_BG);
+        for (k = 0; k < NTRK; k++) {
+            int32_t cx = x0 + MX_GUT + (int32_t)k * MX_CW;
+            int sel = sel_row && k == (uint32_t)(ui.song_trk % NTRK);
+            s = chain_config.row[i].slot[k];
+            if (sel)
+                cv_rrect(cx, ry + 1, MX_CW - 3, rh - 3, 4, T_THEME, T_BG);
+            b[0] = s < 4u ? (char)('A' + s) : '-';
+            b[1] = 0;
+            GFX_HOOK_ALIGN(cx, ry, cx + MX_CW - 3, ry + rh - 2, AL_HV, "matrix cell");
+            cv_text_in(cx, ry + 4, MX_CW - 3, &AF_S, b, sel ? T_INK : s < 4u ? T_TEXT : T_DIM, sel ? T_THEME : T_BG);
+        }
+        fmt_int(b, chain_config.row[i].repeat);
+        cv_text_on(x0 + MX_GUT + 4 * MX_CW + 6, ry + 4, &AF_S, b, sel_row ? T_THEME : T_MID, T_BG);
+    }
+}
 static void graph_slots(void)
 {
     uint32_t i;
@@ -2184,6 +2246,10 @@ static void draw_graph(void)
         case GR_SONG:
             cv_oy = 0;
             graph_song();
+            break;
+        case GR_MATRIX:
+            cv_oy = 0;
+            graph_matrix();
             break;
         case GR_PATS:
             cv_oy = 0;
