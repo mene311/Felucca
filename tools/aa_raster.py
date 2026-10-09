@@ -20,6 +20,16 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+# Pillow without Raqm (e.g. the Termux wheel) cannot set OpenType features:
+# getlength()/text() raise KeyError for any non-None features. The only feature used here is "tnum",
+# and the tabular figures are also enforced by hand below (digits share the widest advance),
+# so fall back to no features. Official builds ship Raqm and are unaffected.
+try:
+    from PIL import features as _pil_features
+    _HAS_RAQM = bool(_pil_features.check("raqm"))
+except Exception:
+    _HAS_RAQM = False
+
 
 def open_font(spec, px):
     """spec = "path[#index][@wght]" (a .ttc takes the face index, a variable font the weight); '~' is expanded."""
@@ -119,7 +129,7 @@ def raster_font(spec, px, chars, tracking=0.0, gamma=1.0, tabular=True, kern_min
     pad = px                                   # canvas margin around the glyph (overhang, accents)
     cw, chh = px * 3, asc + desc + 2 * pad
     base = pad + asc                           # baseline row of the canvas
-    feats = ["tnum"] if tabular else None
+    feats = ["tnum"] if (tabular and _HAS_RAQM) else None
     glyphs, adv, nat = {}, {}, {}
     for ch in chars:
         f = feats if ch.isdigit() else None
