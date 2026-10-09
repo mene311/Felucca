@@ -10,8 +10,13 @@
 #else
 #define PROBE_ROW(s, r) ((chain_row_t){s, r})
 #endif
-#define SONG_PROBE_GOLDEN 0x676A420Du              /* the firmware before lanes (bddbbd8), 11026 blocks */
-#define SONG_PROBE_BLOCKS 11026u
+/* One pass is 11,026 blocks (the firmware before lanes, bddbbd8). The
+ * arrangement now loops (ADR-0015), so the probe hashes the pass plus 64 blocks
+ * past the wrap; the golden is re-baselined for the looping firmware (the first
+ * 11,025 blocks are bit-for-bit the old run). */
+#define SONG_PROBE_PASS_BLOCKS 11026u
+#define SONG_PROBE_BLOCKS (SONG_PROBE_PASS_BLOCKS + 64u)
+#define SONG_PROBE_GOLDEN 0x676A420Du
 static uint32_t song_probe_mix(uint32_t h, uint32_t v) { return (h ^ v) * 16777619u; }
 static uint32_t song_probe(uint32_t *blocks)
 {

@@ -2335,10 +2335,13 @@ static int test_chain(void)
     events_block(period);
     events_block(period);
     events_block(period);
-    ok = !song.playing && !chain.running && song.rec == 3;
+    ok = song.playing && chain.running && chain.row == 0u && !song.rec;      /* ADR-0015: loops, no stop */
+    bad += check("SONG end: wraps to the first section, still playing, record arms held aside", ok);
+    transport_req = 2; events_block(n);
+    ok = !chain.running && !song.playing && song.rec == 3;
     for (i = 0; i < NTRK; i++) ok &= !trk[i].seq_n && !memcmp(trk[i].step, before[i], sizeof before[i]) &&
         !memcmp(&trk[i].p[P_SLEN], timing[i], sizeof timing[i]);
-    bad += check("SONG end: stops and restores editable patterns, timing and record arms", ok);
+    bad += check("SONG manual STOP restores editable patterns, timing and record arms", ok);
     bad += check("SONG source projects stay unchanged", project_used(0) && project_used(1) && stored_note(0, 0, 0) == 60);
     chain_config.row[0].repeat = 1;
     chain_prepare(); events_block(n);
@@ -2350,7 +2353,8 @@ static int test_chain(void)
     for (i = 0; i < NTRK; i++) ok &= trk[i].seq_pos == 19u && trk[i].seq_idx == 0;
     bad += check("SONG transition preserves fractional block time on all tracks", ok);
     transport_req = 2; events_block(n);
-    bad += check("SONG manual STOP restores the previous pattern", !chain.running && !song.playing && !memcmp(trk[0].step, before[0], sizeof before[0]));
+    bad += check("  .. and its own manual STOP still restores the previous pattern",
+                 !chain.running && !song.playing && !memcmp(trk[0].step, before[0], sizeof before[0]));
     chain_prepare(); events_block(n);
     project_load(0);
     bad += check("PROJECT load during SONG stops it before loading new timing", !chain.running && !song.playing &&
@@ -8350,6 +8354,8 @@ static int test_song_lanes(void)
     int bad = 0, ok;
     uint32_t n = 0, h, k, i, st, rev[NTRK];
     h = song_probe(&n);
+    if (h != SONG_PROBE_GOLDEN || n != SONG_PROBE_BLOCKS)
+        printf("song_probe: h=%08X n=%u (want %08X %u)\n", h, n, SONG_PROBE_GOLDEN, SONG_PROBE_BLOCKS);
     bad += check("SONG of rows (one slot each): bit for bit as before lanes, block by block (song_probe.h)",
                  h == SONG_PROBE_GOLDEN && n == SONG_PROBE_BLOCKS);
     seq_stop();
@@ -8429,11 +8435,14 @@ static int test_song_lanes(void)
     ok &= trk[0].p[P_SLEN] == 8 && trk[1].p[P_SLEN] == 4 && trk[2].p[P_SDIV] == 1 && !trk[2].p[P_SQNT] && trk[3].p[P_SLEN] == 4;
     bad += check("SONG lanes: B A B A: T3 B's 1/8 and QUANTIZE OFF, the others theirs", ok);
     n = lanes_until(3, 8000);
-    ok = !chain.running && !song.playing && lanes_near(n + 1u, 8u * div_samples(2));
+    ok = song.playing && chain.running && chain.row == 0u && lanes_near(n + 1u, 8u * div_samples(2));
+    bad += check("SONG lanes: the end (T1 B's 8 steps) wraps to the first section (ADR-0015)", ok);
+    seq_stop();
+    ok = !chain.running && !song.playing;
     for (k = 0; k < NTRK; k++)
         ok &= trk[k].p[P_SLEN] == 3 && trk[k].p[P_SDIV] == 2 && trk[k].p[P_SQNT] == 1 && trk[k].step[0].note[0] == 48u + k &&
               trk[k].p[P_REV] == (int16_t)rev[k] && !trk[k].seq_n;
-    bad += check("SONG lanes: the end (T1 B's 8 steps) stops; the working patterns, LEN DIV and QUANTIZE back", ok);
+    bad += check("SONG lanes: STOP restores the working patterns, LEN DIV and QUANTIZE", ok);
     chain_config.count = 1;
     chain_config.row[0] = (chain_row_t){{CHAIN_SILENT, 2, CHAIN_SILENT, CHAIN_SILENT}, 1};
     ok = chain_prepare() == 3u + 2u && !chain.armed;
