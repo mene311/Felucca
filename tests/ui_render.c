@@ -938,7 +938,7 @@ static void setup(int s)
         break;
     case S_TRACKER: {
         uint32_t k;
-        song.rec = 0; go_page(GR_TRACKER);
+        song.rec = 0; go_page(GR_ROLL);
         for (k = 0; k < 16u; k++) {
             step_t *st = &TSEL->step[k];
             st->note[0] = 0; st->n = 0; st->time = ST_REST; st->flags = 0; st->vel = 0;

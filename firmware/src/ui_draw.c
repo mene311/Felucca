@@ -1056,7 +1056,7 @@ static void draw_columns(void)
         draw_column(3, "AMT", val, unit, a ? VAL(3u) : T_DIM, RATIO(&TP[id + 2u], a), mod_src_icon(MS_OFF));
         return;
     }
-    if ((cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER) && lock_held()) {   /* a step held: what KNOB 1..4 lock (ui_input.c lock_turn) */
+    if (cur_page()->graph == GR_ROLL && lock_held()) {   /* a step held: what KNOB 1..4 lock (ui_input.c lock_turn) */
         uint64_t held = lock_held();
         uint32_t st = 0;
         while (!((held >> st) & 1u))

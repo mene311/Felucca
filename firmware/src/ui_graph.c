@@ -1194,7 +1194,7 @@ static uint32_t graph_signature(void)
                                                      * levels, FB; the operator pages: the operator, the stage) */
         h ^= (fm6_pgen[(t - trk) % NTRK] + 1u) * 2246822519u + (fop_op + 1u) * 40503u + (fop_stg + 1u) * 7919u;
     if (pg->scope == SC_ENGINE && ENGINES[t->eng_req % NENGINES] == &ENG_SAMPLE) h ^= sample_wave.pos * 13u + sample_wave.key;
-    if (pg->graph == GR_ROLL || pg->graph == GR_TRACKER) {
+    if (pg->graph == GR_ROLL) {
         uint32_t ph = song.playing ? t->seq_idx : 0xFFFFu;
         if (ph / 16u != ui.bank)
             ph = 0xFFFFu;                            /* the roll shows the cursor's bank only */
@@ -2278,16 +2278,9 @@ static void draw_graph(void)
         case GR_ROLL:
             cv_oy = 0;
             if (drum_track(t))
-                graph_grid(t, c);
-            else
-                graph_roll(t, c);
-            break;
-        case GR_TRACKER:
-            cv_oy = 0;
-            if (drum_track(t))
                 graph_grid(t, c);                    /* the drum grid stays the drum editor */
             else
-                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows */
+                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows (graph_roll kept for the menu option) */
             break;
         case GR_SCALE:
             graph_scale(t, c);
