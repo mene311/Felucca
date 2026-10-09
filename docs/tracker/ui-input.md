@@ -8,7 +8,7 @@ ever required.
 
 | Screen | Status | Contents |
 | --- | --- | --- |
-| TRACKER | new (phase 2) | vertical row list: note, instrument, velocity, command columns; cursor |
+| TRACKER | **delivered** (STEP page's view) | vertical rows: step number, note (TIE/DRM/---), flags (A/S/xN), velocity hex, lock marks; cursor frame, playhead; drum tracks keep the grid |
 | POOL | phase 1 (replaces PROJECT) | 8–16 slots, letters A–H; save / load / clone / erase / name |
 | SONG (order list) | extend (phase 1) | 64 rows, slot letter + repeat; insert / delete / duplicate / move |
 | MATRIX | **delivered** (v1.x) | sections × 4 track columns: slot letters, `-` silent, cursor, repeats, play mark (GLO's first page) |

@@ -26,6 +26,13 @@ it edits the same data with the same knobs (SEC/TRACK/PAT/REPS). Renders cover
 the empty and a mixed 4-section grid (0 lint findings, 0 misalignments); host
 tests updated for the tracker-first GLO behaviour.
 
+Also delivered: the **vertical TRACKER view** — the STEP page (SEQ) draws the
+current bank as rows (step number, note with TIE/DRM/---, flags A/S/xN, velocity
+in hex, lock marks, cursor frame and playhead) for melodic tracks; drum tracks
+keep the grid. Same cursor, keys, cards and locks, so every SEQ test is
+unchanged. The piano roll stays in the tree (the suites that audit its drawing
+force it with `pr_roll_force`) and returns as a MENU > DISPLAY option.
+
 Still to do for the hardware milestone: row move/reorder, then the flash and the
 3:30 hardware test.
 
