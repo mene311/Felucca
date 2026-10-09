@@ -218,13 +218,20 @@ static void graph_tracker(const track_t *t, uint16_t c)
         first = 0;
     if (drum_track(t)) {                             /* the lanes as columns: BD SD CP CH OH TM RS CB */
         uint32_t k;
+        const int32_t dy0 = 20;                      /* clear of the header */
+        rows = ((int32_t)graph_h() - dy0 - 2) / TR_RH;
+        first = cur - rows / 2;
+        if (first > 16 - rows)
+            first = 16 - rows;
+        if (first < 0)
+            first = 0;
         for (k = 0; k < NLANE; k++) {
             int32_t cx = TR_LX + (int32_t)k * TR_LW;
             GFX_HOOK_ALIGN(cx, 2, cx + TR_LW, 16, AL_HV, "tracker lane header");
             cv_text_in(cx, 2 + CAP_IN(S, 14), TR_LW, &AF_S, drum_lane_abbr(t, k), T_DIM, T_BG);
         }
         for (r = 0; r < rows; r++) {
-            int32_t idx = first + r, y = TR_Y0 + r * TR_RH;
+            int32_t idx = first + r, y = dy0 + r * TR_RH;
             uint32_t si = base + (uint32_t)idx, hits, accs;
             const step_t *st;
             int on;
