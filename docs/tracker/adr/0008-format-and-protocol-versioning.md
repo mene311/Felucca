@@ -11,7 +11,7 @@ rule: newer firmware reads older stores; older firmware refuses newer ones.
 
 ## Decision
 
-- New records use the next free magic tag (`FUNA` after `FUN9`), an explicit
+- New records use the next free magic tag (`FUNB` after upstream 1.4's `FUNA`), an explicit
   size, and a `_Static_assert` pinning the layout, as upstream does.
 - Conversions are one-way and lossless where possible; fields that cannot map are
   explicitly defaulted and documented (e.g. locks on parameters an older layout

@@ -20,6 +20,7 @@ alternatives. Statuses: `proposed`, `accepted`, `superseded by ADR-XXXX`.
 | [0013](0013-notes-hold-until-off.md) | Notes hold until an OFF row (v2 playback semantics) | accepted; refined by 0014 |
 | [0014](0014-note-columns.md) | Note columns: per-column monophony, chords across columns, glide | accepted |
 | [0015](0015-arrangement-loops.md) | The arrangement loops from the first row; no stop marker | accepted |
+| [0016](0016-rebase-on-1.4.md) | Base is Felucca 1.4; its matrix is inherited; v1 re-scoped | accepted |
 
 To add a decision: copy the template of an existing ADR, take the next number,
 and add it here.

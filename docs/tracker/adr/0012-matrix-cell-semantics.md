@@ -1,5 +1,10 @@
 # ADR-0012: Matrix cell semantics — inherit, mute gesture B, notes-only mute
 
+> **Amended 2026-10-09 (later):** upstream 1.4 already provides per-track slots,
+> `CHAIN_SILENT` (`−`) and inherit-on-add (a new section copies the previous one).
+> What remains open is whether to add a mute flag that preserves the reference
+> (`−` loses which pattern was there) — see [ADR-0016](0016-rebase-on-1.4.md).
+
 > **Amended 2026-10-09:** the stop-value question is resolved by
 > [ADR-0015](0015-arrangement-loops.md) — the arrangement loops from the first
 > row, so cells need no stop marker and inherited state resets each pass.

@@ -1,13 +1,14 @@
-# Felucca Tracker — documentation
+# FM-1 TRACKER — documentation
 
-A tracker-oriented fork of [Felucca](https://github.com/hugelton/Felucca), the
-custom firmware for the M-VAVE FM-1. This directory is the engineering record:
+**FM-1 TRACKER** — a tracker-oriented fork of
+[Felucca](https://github.com/hugelton/Felucca), the custom firmware for the
+M-VAVE FM-1. This directory is the engineering record:
 requirements, architecture, data model, formats, UI/input, testing and the
 decision log. **Code follows these documents — not the other way round.**
 
 - Upstream: `github.com/hugelton/Felucca` (GPL-3.0-only; this fork stays GPL-3.0)
 - This fork: `github.com/mene311/Felucca`
-- Baseline: Felucca 1.1.5.1
+- Baseline: **Felucca 1.4** (upstream main, merged)
 
 ## Status
 
@@ -15,7 +16,7 @@ decision log. **Code follows these documents — not the other way round.**
 | --- | --- | --- |
 | pre-release | Design docs (this set) | draft — under review |
 | pre-release | Dev loop (phone host builds, laptop toolchain, browser emulator) | **done** |
-| **v1 (MVP)** | **Pattern matrix over the 4 existing patterns**: per-track refs, repeat, per-occurrence mute, MATRIX screen; 32-line patterns — tracker-first default ([adr/0009](adr/0009-mvp-pattern-matrix.md), [adr/0010](adr/0010-tracker-first-default.md)) | not started |
+| **v1 (MVP)** | Loop the arrangement · MATRIX grid screen · row move/reorder · mute policy · branding **FM-1 TRACKER** · hardware-validated 3:30 song (upstream 1.4 already ships the per-track matrix data and SONG editing — [adr/0016](adr/0016-rebase-on-1.4.md)) | not started |
 | v2 | Tracker view + hex command columns over the motion system | not started |
 | v3 | Per-step instrument byte | not started |
 | v4 | Capacity: pattern pool 8–16, order list 64 rows | not started |
