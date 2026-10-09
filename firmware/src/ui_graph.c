@@ -197,7 +197,7 @@ static void pr_bars(const step_t *st, int32_t x, int32_t w, uint16_t c, int acc_
  * step holds locks. Same cursor, banks, keys, cards and playhead as the piano roll it draws instead of
  * (the roll returns as a MENU > DISPLAY option; ui_graph.c). */
 #define TR_Y0 6
-#define TR_RH 13
+#define TR_RH 12
 static void graph_tracker(const track_t *t, uint16_t c)
 {
     static const char HEXD[] = "0123456789ABCDEF";
@@ -239,7 +239,7 @@ static void graph_tracker(const track_t *t, uint16_t c)
             str_cpy(nb, "DRM", sizeof nb);
         else
             str_cpy(nb, "---", sizeof nb);
-        cv_text_on(34, y + 1, &AF_S, nb, (st->n || st->hit || st->time == ST_TIE) ? T_TEXT : T_DIM, bg);
+        cv_text_on(30, y + 1, &AF_S, nb, (st->n || st->hit || st->time == ST_TIE) ? T_TEXT : T_DIM, bg);
         nb[0] = 0;                                   /* the flags: A accent, S slide, xN ratchet */
         if (st->flags & SF_ACCENT)
             str_cpy(nb + str_len(nb), "A", 2);
@@ -251,13 +251,13 @@ static void graph_tracker(const track_t *t, uint16_t c)
             nb[str_len(nb)] = (char)('0' + rn);
             nb[str_len(nb) + 1u] = 0;
         }
-        cv_text_on(92, y + 1, &AF_S, nb, nb[0] ? T_TEXT : T_DIM, bg);
+        cv_text_on(66, y + 1, &AF_S, nb, nb[0] ? T_TEXT : T_DIM, bg);
         nb[0] = HEXD[(st->vel >> 4) & 15u];          /* the velocity, hex */
         nb[1] = HEXD[st->vel & 15u];
         nb[2] = 0;
-        cv_text_on(134, y + 1, &AF_S, nb, (st->n || st->hit) ? T_TEXT : T_DIM, bg);
+        cv_text_on(108, y + 1, &AF_S, nb, (st->n || st->hit) ? T_TEXT : T_DIM, bg);
         if ((locks >> si) & 1u)                      /* a parameter lock on the step */
-            cv_rect(176, y + 5, 5, 3, T_ACCENT);
+            cv_rect(150, y + 5, 5, 3, T_ACCENT);
     }
 }
 static void graph_roll(const track_t *t, uint16_t c)
