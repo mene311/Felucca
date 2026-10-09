@@ -17,7 +17,7 @@ decision log. **Code follows these documents — not the other way round.**
 | pre-release | Design docs (this set) | draft — under review |
 | pre-release | Dev loop (phone host builds, laptop toolchain, browser emulator) | **done** |
 | **v1 (MVP)** | Matrix capability via upstream 1.4 (per-track sections, `-` mute, repeats) · **loop** · **FM-1 TRACKER branding** | **simulator-ready** |
-| v1.x | **MATRIX grid screen delivered** (GLO's first page) · **vertical TRACKER view delivered** (the STEP page draws rows: step, note, flags, velocity hex, lock marks; drum tracks keep the grid; the roll is kept for its audits and returns as a MENU > DISPLAY option) · row move/reorder · hardware-validated 3:30 song | views done; rest pending |
+| v1.x | **MATRIX grid screen delivered** (GLO's first page) · **vertical TRACKER view delivered** (the STEP page draws rows: melodic = step/note/flags/velocity hex/locks; drum tracks = the lanes as columns BD..CB with hits and accents; the roll and grid are kept for their audits and return as a MENU > DISPLAY option) · row move/reorder · hardware-validated 3:30 song | views done; rest pending |
 | v2 | Tracker view + hex command columns over the motion system | not started |
 | v3 | Per-step instrument byte | not started |
 | v4 | Capacity: pattern pool 8–16, order list 64 rows | not started |
