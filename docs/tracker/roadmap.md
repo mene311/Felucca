@@ -14,7 +14,7 @@ Scope is frozen by the requirements it implements.
 ## v1 (MVP) — Pattern matrix over four patterns
 
 - Goal: arrange by repeating, mixing and matching and muting the four existing
-  patterns.
+  patterns. The MATRIX is the default arrangement surface (ADR-0010).
 - Deliverables:
   - Matrix rows: per-track refs (4 bits/track), repeat, per-track mute mask;
     insert / delete / duplicate / move (16 rows, R1).
@@ -28,7 +28,8 @@ Scope is frozen by the requirements it implements.
 
 ## v2 — Tracker view and commands
 
-- Goal: type notes and effects row by row.
+- Goal: type notes and effects row by row. The TRACKER view becomes the default
+  editing surface (ADR-0010); the current STEP roll stays reachable.
 - Deliverables: TRACKER screen (cursor, hex entry, keycap hints); per-track
   command stores (≥ 256/track, lock/event semantics, two command columns);
   velocity/pan/delay columns; EDIT-layer clipboard; motion merge rule for

@@ -14,6 +14,7 @@ alternatives. Statuses: `proposed`, `accepted`, `superseded by ADR-XXXX`.
 | [0007](0007-on-device-hex-input.md) | Hex entry on the 16 white keys; knobs are a fallback | accepted |
 | [0008](0008-format-and-protocol-versioning.md) | New magic (`FUNA`), append-only protocol ops, capability tags | accepted |
 | [0009](0009-mvp-pattern-matrix.md) | **MVP = pattern matrix over 4 patterns** (per-track refs, repeat, mute) | accepted |
+| [0010](0010-tracker-first-default.md) | Tracker-first default interface — no mode switch | accepted |
 
 To add a decision: copy the template of an existing ADR, take the next number,
 and add it here.

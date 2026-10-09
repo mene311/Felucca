@@ -17,6 +17,8 @@ and mute per occurrence while arranging.
 
 ## Goals
 
+- G0. The tracker surfaces are the **default interface** of the fork — no opt-in
+  mode ([adr/0010](adr/0010-tracker-first-default.md)).
 - G1. Arrange songs from the **4 existing patterns** with per-track mix-and-match
   and per-occurrence mute (the MVP).
 - G2. Row-based editing on the device: notes **and effect commands** per row.
@@ -56,6 +58,9 @@ and mute per occurrence while arranging.
   (chain, project, protocol) green; `ui_render` lint and alignment clean.
 
 ### R2 — MATRIX screen
+
+- R2.0 The MATRIX MUST be the default arrangement surface of the firmware
+  (no enable switch; Felucca pages stay reachable, ADR-0010).
 
 - R2.1 A dedicated screen MUST show the arrangement as **4 track columns × the
   row list**, each cell showing which pattern (if any) that track uses for that
