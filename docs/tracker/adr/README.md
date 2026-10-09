@@ -15,6 +15,9 @@ alternatives. Statuses: `proposed`, `accepted`, `superseded by ADR-XXXX`.
 | [0008](0008-format-and-protocol-versioning.md) | New magic (`FUNA`), append-only protocol ops, capability tags | accepted |
 | [0009](0009-mvp-pattern-matrix.md) | **MVP = pattern matrix over 4 patterns** (per-track refs, repeat, mute) | accepted |
 | [0010](0010-tracker-first-default.md) | Tracker-first default interface — no mode switch | accepted |
+| [0011](0011-v1-pattern-length.md) | v1 pattern length is 32 lines (default, not a cap) | accepted |
+| [0012](0012-matrix-cell-semantics.md) | Matrix cells: blank inherits, mute gesture B, notes-only | accepted |
+| [0013](0013-notes-hold-until-off.md) | Notes hold until an OFF row (v2 playback semantics) | accepted |
 
 To add a decision: copy the template of an existing ADR, take the next number,
 and add it here.

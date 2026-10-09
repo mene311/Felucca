@@ -43,13 +43,20 @@ and mute per occurrence while arranging.
   (whole-pattern reference = all four refs pointing at the same pattern).
 - R1.3 Rows MUST support **mix and match**: a row may take track 1 from pattern A,
   track 2 from C, and so on.
-- R1.4 Each row MUST carry a **per-track mute mask**; a muted track plays nothing
-  for that occurrence and the referenced content is never altered.
+- R1.4 Each row MUST carry a **per-track mute**: a dedicated black key toggles
+  it on the selected cell (gesture B, [adr/0012](adr/0012-matrix-cell-semantics.md));
+  a muted track plays **no notes** for that occurrence (its automation keeps
+  running) and the referenced content is never altered.
+- R1.4b A **blank cell inherits** the track's previous assignment until changed;
+  stopping a track needs an explicit stop value in the cell (Q-M4).
 - R1.5 Each row MUST carry a repeat count (existing range 1..16; extending to
   1..255 is allowed if free).
 - R1.6 Row operations MUST include insert, delete, duplicate (alias), move
-  up/down, and set repeat. Row count stays 16 for the MVP (a larger list is
-  phase 4).
+  up/down, and set repeat. Row count stays 16 for the MVP (a larger list is a
+  later capacity release; still open for v1, Q-M1).
+- R1.9 v1 works with **32-line patterns** as the default (existing 64-step
+  projects still load; 32 is a default, not a cap —
+  [adr/0011](adr/0011-v1-pattern-length.md)).
 - R1.7 References are aliases: rows sharing a pattern share content; editing the
   pattern changes every row that uses it.
 - R1.8 **Acceptance**: a round-trip save/load of a matrix song; two rows sharing
@@ -89,8 +96,12 @@ and mute per occurrence while arranging.
 
 ## v2 — Tracker view and commands
 
+- R4.0 **Note semantics**: a row that triggers notes holds them; empty rows do
+  not end them; an explicit OFF row releases everything the track holds
+  ([adr/0013](adr/0013-notes-hold-until-off.md)). A new note does not implicitly
+  cut held notes. `step_t` gains an OFF state; TIE/REST are redefined.
 - R4.1 A TRACKER screen with rows and typed values: note, instrument, velocity,
-  command columns.
+  command columns, and the OFF entry.
 - R4.2 Commands resolve to motion records `(track, row, param, value)` with kind
   *lock* (row only) or *event* (holds); addressable ids are `motion_param()`-eligible.
 - R4.3 Motion capacity becomes **per track and ≥ 256 records per pattern**

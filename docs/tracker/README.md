@@ -15,7 +15,7 @@ decision log. **Code follows these documents — not the other way round.**
 | --- | --- | --- |
 | pre-release | Design docs (this set) | draft — under review |
 | pre-release | Dev loop (phone host builds, laptop toolchain, browser emulator) | **done** |
-| **v1 (MVP)** | **Pattern matrix over the 4 existing patterns**: per-track refs, repeat, per-occurrence mute, MATRIX screen — tracker-first default ([adr/0009](adr/0009-mvp-pattern-matrix.md), [adr/0010](adr/0010-tracker-first-default.md)) | not started |
+| **v1 (MVP)** | **Pattern matrix over the 4 existing patterns**: per-track refs, repeat, per-occurrence mute, MATRIX screen; 32-line patterns — tracker-first default ([adr/0009](adr/0009-mvp-pattern-matrix.md), [adr/0010](adr/0010-tracker-first-default.md)) | not started |
 | v2 | Tracker view + hex command columns over the motion system | not started |
 | v3 | Per-step instrument byte | not started |
 | v4 | Capacity: pattern pool 8–16, order list 64 rows | not started |
