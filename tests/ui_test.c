@@ -9119,6 +9119,7 @@ static int test_no_flash(void)
 int main(void)
 {
     setvbuf(stdout, NULL, _IONBF, 0);
+    pr_roll_force = 1;                               /* this suite audits the piano roll's drawing (the tracker is ui_render's) */
     int bad = 0;
     bad += test_large_face();
     bad += test_sound_loads();
