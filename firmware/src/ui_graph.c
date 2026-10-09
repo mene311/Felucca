@@ -1471,8 +1471,8 @@ static void graph_matrix(void)
         if ((uint32_t)i > chain_config.count)
             break;
         if ((uint32_t)i == chain_config.count) {     /* + ADD (as SONG; the section copies the one before) */
-            GFX_HOOK_ALIGN(x0, ry, 232, ry + rh - 3, AL_HV, "matrix + ADD centred");
-            cv_text_in(x0, ry + 4, 232, &AF_S, "+ ADD SECTION", sel_row ? T_THEME : T_DIM, T_BG);
+            GFX_HOOK_ALIGN(x0, ry, 232, ry + rh, AL_HV, "matrix + ADD centred");
+            cv_text_in(x0, ry + CAP_IN(S, rh), 232, &AF_S, "+ ADD SECTION", sel_row ? T_THEME : T_DIM, T_BG);
             break;
         }
         fmt_int(b, i + 1);
@@ -1487,8 +1487,8 @@ static void graph_matrix(void)
                 cv_rrect(cx, ry + 1, MX_CW - 3, rh - 3, 4, T_THEME, T_BG);
             b[0] = s < 4u ? (char)('A' + s) : '-';
             b[1] = 0;
-            GFX_HOOK_ALIGN(cx, ry, cx + MX_CW - 3, ry + rh - 2, AL_HV, "matrix cell");
-            cv_text_in(cx, ry + 4, MX_CW - 3, &AF_S, b, sel ? T_INK : s < 4u ? T_TEXT : T_DIM, sel ? T_THEME : T_BG);
+            GFX_HOOK_ALIGN(cx, ry, cx + MX_CW - 3, ry + rh - 1, AL_HV, "matrix cell");
+            cv_text_in(cx, ry + CAP_IN(S, rh - 1), MX_CW - 3, &AF_S, b, sel ? T_INK : s < 4u ? T_TEXT : T_DIM, sel ? T_THEME : T_BG);
         }
         fmt_int(b, chain_config.row[i].repeat);
         cv_text_on(x0 + MX_GUT + 4 * MX_CW + 6, ry + 4, &AF_S, b, sel_row ? T_THEME : T_MID, T_BG);
