@@ -3675,6 +3675,7 @@ static int test_slices(void)
     p0 = TSEL->p[P_E1];
     turn(EN_K1, 2); turn(EN_K2, 3);
     ok = n == 16u && slice_sel() == 2u && TSEL->p[P_E1] == p0 && msg_is("SRC USR1-3 TO EDIT") && !slice_act_ready(2);
+    if (!ok) printf("DBG slices n=%u sel=%u p1=%d p0=%u msg='%s' ready=%d page=%s\n", n, slice_sel(), (int)TSEL->p[P_E1], p0, ui.msg, (int)slice_act_ready(2), cur_page()->title);
     bad += check("SLICES on BREAK: its 16 slices shown, KNOB 1 picks; edits need USR1-3 (DIV unchanged)", ok);
     TSEL->p[P_E0] = 2;                               /* SRC USR2, empty: no slices (a sine plays): NO SAMPLE */
     frame();
