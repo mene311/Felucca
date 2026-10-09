@@ -71,15 +71,14 @@ python3 -m http.server 8080 --directory build/emu      # open http://localhost:8
    input, audio or storage paths.
 8. Docs: requirement/ADR references updated; open questions closed or filed.
 
-## Per-phase test matrix
+## Per-release test matrix
 
 | Release | New tests |
 | --- | --- |
-| v1 (MVP) | matrix rows: insert/delete/move/duplicate/repeat; 64-row playback order; pool 8 slots; FUN10 round-trip + downgrade refusal; protocol ops |
+| v1 (MVP) | matrix rows: per-track refs, mute per occurrence, repeat / insert / delete / move; alias edits propagate; FUNA round-trip + corrupt-record recovery; protocol order-list ops; MATRIX screen render lint/alignment |
 | v2 | per-track motion capacity; lock vs event semantics at row start; pan/delay timing (frame-accurate); UI input simulation for hex entry (ui_test); golden playback of a scripted pattern |
 | v3 | instrument apply before note-on; same-engine vs cross-engine switch (fade path); undo; protocol step byte |
-| v5 | timing: alias edits, mute per occurrence, matrix render lint |
-| (v4) | capacity: pool 8+, 64 rows |
+| v4 | pool 8–16 slots; 64-row order list; storage option round-trip + recovery; flash map checks |
 | v5 | `DIV` 1/64 / 1/128 / triplets timing; `NSTEP` 128 banks, protocol step index, motion `place` under 128 |
 
 ## Regression policy
