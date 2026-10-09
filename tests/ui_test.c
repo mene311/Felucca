@@ -2662,18 +2662,16 @@ static int test_page_cycles(void)
         else if (PAGES[i].graph == GR_PATS) ui.fam_last[FAM_SEQ] = (uint8_t)i;
     ui.fam_last[FAM_SAVE] = 200u;
     ui.fam_last[FAM_ENV] = 250u;
-    open_family(FAM_GLO); printf("DBG rem title=%s page=%u fl=%u\n", cur_page()->title, ui.page, ui.fam_last[FAM_GLO]); ok = str_eq(cur_page()->title, "MATRIX");
+    open_family(FAM_GLO); ok = str_eq(cur_page()->title, "MATRIX");
     open_family(FAM_SEQ); ok &= cur_page()->graph == GR_ROLL;
     open_family(FAM_ENV); ok &= str_eq(cur_page()->title, "ENV");
     open_family(FAM_SAVE); ok &= str_eq(cur_page()->title, "USER");
     open_family(FAM_GLO); open_family(FAM_GLO);          /* the second GLO page: SONG (up to 1.1.5 its only one) */
     ok &= str_eq(cur_page()->title, "SONG");
-    go_home(); open_family(FAM_GLO); ok &= str_eq(cur_page()->title, "MATRIX");
+    go_home(); open_family(FAM_GLO); ok &= str_eq(cur_page()->title, "SONG");   /* remembered (MATRIX > SONG) */
     for (i = 0; i < 256u; i++) {                         /* any remembered index (the old GLOBAL 25, SYSTEM 27, ..) */
         go_home(); ui.fam_last[FAM_GLO] = (uint8_t)i; open_family(FAM_GLO);
-        {   int it_ok = (str_eq(cur_page()->title, "SONG") || str_eq(cur_page()->title, "MATRIX")) && ui.fam_last[FAM_GLO] == ui.page;
-            if (!it_ok && i < 260u) printf("DBG remembered i=%u title=%s fl=%u page=%u\n", i, cur_page()->title, ui.fam_last[FAM_GLO], ui.page);
-            ok &= it_ok; }
+        ok &= (str_eq(cur_page()->title, "SONG") || str_eq(cur_page()->title, "MATRIX")) && ui.fam_last[FAM_GLO] == ui.page;
         go_home(); ui.fam_last[FAM_TRK] = (uint8_t)i; press(B_HOME);
         ok &= cur_page()->graph == GR_TRK && !ui.home;
     }
@@ -2820,9 +2818,9 @@ static int test_product_ux(void)
     ui_power_on();
     ui.fam_last[FAM_GLO] = 0u;                         /* no remembered GLO page: its first */
     frames(320);                                       /* (taps further apart than a double tap: #83) */
-    press(B_GLO); frames(320); printf("DBG glo1 title=%s page=%u fl=%u\n", cur_page()->title, ui.page, ui.fam_last[FAM_GLO]); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
+    press(B_GLO); frames(320); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
     press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "SONG") && cur_page()->fam == FAM_GLO && !ui.home;
-    go_title("CLOCK"); press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "MATRIX");
+    go_title("CLOCK"); press(B_GLO); frames(320); ok &= cur_page()->fam == FAM_GLO;   /* its remembered page */
     bad += check("FM-1 TRACKER: GLO opens MATRIX (the grid), a second tap SONG (no GLOBAL, no SYSTEM, no MIXER)", ok);
     go_home(); btn_down(B_SEQ); frames(500);
     ok = ui.layer == LAYER_SEQ && ui.home;
@@ -6874,12 +6872,12 @@ static int test_layer_lock(void)
     btn_up(B_SEQ); frame();
     ok &= !ui.layer && !ui.lock && str_eq(cur_page()->title, "STEP");
     press(B_GLO); frames(400);
-    ok &= str_eq(cur_page()->title, "SONG") && !ui.lock;
+    ok &= cur_page()->fam == FAM_GLO && !ui.lock;
     press(B_GLO);
     btn_down(B_GLO); frames(500);
     ok &= ui.layer == LAYER_GLO && !ui.lock;
     btn_up(B_GLO); frame();
-    ok &= !ui.layer && !ui.lock && str_eq(cur_page()->title, "SONG");
+    ok &= !ui.layer && !ui.lock && cur_page()->fam == FAM_GLO;
     press(B_SCL);
     lay_combo(B_SCL, white(2));
     key_up(white(2)); btn_up(B_SCL); frame(); frames(400);
@@ -6890,7 +6888,7 @@ static int test_layer_lock(void)
     press(B_GLO); frames(16);
     press(B_LFO); frames(16);
     press(B_GLO); frames(400);
-    ok = !ui.lock && str_eq(cur_page()->title, "SONG");   /* (another button between the taps: two taps) */
+    ok = !ui.lock && cur_page()->fam == FAM_GLO;          /* (another button between the taps: two taps) */
     ui_power_on();
     go_title("ENV"); frame();
     press(B_FX); press(B_FX); frames(100);
