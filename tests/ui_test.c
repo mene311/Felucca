@@ -2671,7 +2671,9 @@ static int test_page_cycles(void)
     go_home(); open_family(FAM_GLO); ok &= str_eq(cur_page()->title, "MATRIX");
     for (i = 0; i < 256u; i++) {                         /* any remembered index (the old GLOBAL 25, SYSTEM 27, ..) */
         go_home(); ui.fam_last[FAM_GLO] = (uint8_t)i; open_family(FAM_GLO);
-        ok &= (str_eq(cur_page()->title, "SONG") || str_eq(cur_page()->title, "MATRIX")) && ui.fam_last[FAM_GLO] == ui.page;
+        {   int it_ok = (str_eq(cur_page()->title, "SONG") || str_eq(cur_page()->title, "MATRIX")) && ui.fam_last[FAM_GLO] == ui.page;
+            if (!it_ok && i < 260u) printf("DBG remembered i=%u title=%s fl=%u page=%u\n", i, cur_page()->title, ui.fam_last[FAM_GLO], ui.page);
+            ok &= it_ok; }
         go_home(); ui.fam_last[FAM_TRK] = (uint8_t)i; press(B_HOME);
         ok &= cur_page()->graph == GR_TRK && !ui.home;
     }
@@ -2816,6 +2818,7 @@ static int test_product_ux(void)
     hold(B_HOME);
     bad += check("1.2: HOME held still opens the menu", ui.menu == 1);
     ui_power_on();
+    ui.fam_last[FAM_GLO] = 0u;                         /* no remembered GLO page: its first */
     frames(320);                                       /* (taps further apart than a double tap: #83) */
     press(B_GLO); frames(320); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
     press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "SONG") && cur_page()->fam == FAM_GLO && !ui.home;
