@@ -192,6 +192,74 @@ static void pr_bars(const step_t *st, int32_t x, int32_t w, uint16_t c, int acc_
             pr_split(x, y + 1, w, PR_RH - 2, c, hits);
     }
 }
+/* TRACKER (FM-1 TRACKER): the vertical rows of the current 16-step bank: the step number, the note
+ * (or TIE / DRM / ---), the flags (accent, slide, ratchet), the velocity in hex and a mark where the
+ * step holds locks. Same cursor, banks, keys, cards and playhead as the piano roll it draws instead of
+ * (the roll returns as a MENU > DISPLAY option; ui_graph.c). */
+#define TR_Y0 6
+#define TR_RH 13
+static void graph_tracker(const track_t *t, uint16_t c)
+{
+    static const char HEXD[] = "0123456789ABCDEF";
+    uint32_t base = ui.bank * 16u, len = (uint32_t)t->p[P_SLEN];
+    uint64_t locks = motion_lock_steps(trk_index(t));
+    int32_t rows = ((int32_t)graph_h() - TR_Y0 - 2) / TR_RH, cur = (int32_t)(ui.cursor & 15u), first, r;
+    char nb[10];
+    (void)c;
+    if (rows < 4)
+        rows = 4;
+    first = cur - rows / 2;
+    if (first > 16 - rows)
+        first = 16 - rows;
+    if (first < 0)
+        first = 0;
+    for (r = 0; r < rows; r++) {
+        int32_t idx = first + r, y = TR_Y0 + r * TR_RH;
+        uint32_t si = base + (uint32_t)idx;
+        const step_t *st;
+        uint16_t bg;
+        int on;
+        if (idx >= 16 || si >= len)                  /* past LEN: no row there */
+            break;
+        st = &seq_steps(t)[si];
+        on = si == ui.cursor;
+        bg = on ? T_RAISE : T_BG;
+        if (on)
+            cv_rrect(1, y - 1, 238, TR_RH - 1, 3, T_RAISE, T_BG);
+        if (song.playing && si == t->seq_idx)
+            cv_rect(1, y, 2, TR_RH - 1, T_ACCENT);
+        fmt_int(nb, (int32_t)si + 1);                /* the step number, two digits */
+        if (!nb[1]) { nb[1] = nb[0]; nb[0] = '0'; nb[2] = 0; }
+        cv_text_on(6, y + 1, &AF_S, nb, on ? T_THEME : T_DIM, bg);
+        if (st->time == ST_TIE)                      /* the note cell */
+            str_cpy(nb, "TIE", sizeof nb);
+        else if (st->n)
+            note_name(nb, st->note[0]);
+        else if (st->hit)
+            str_cpy(nb, "DRM", sizeof nb);
+        else
+            str_cpy(nb, "---", sizeof nb);
+        cv_text_on(34, y + 1, &AF_S, nb, (st->n || st->hit || st->time == ST_TIE) ? T_TEXT : T_DIM, bg);
+        nb[0] = 0;                                   /* the flags: A accent, S slide, xN ratchet */
+        if (st->flags & SF_ACCENT)
+            str_cpy(nb + str_len(nb), "A", 2);
+        if (st->flags & SF_SLIDE)
+            str_cpy(nb + str_len(nb), "S", 2);
+        if (step_ratchet(st) > 1u) {
+            uint32_t rn = step_ratchet(st);
+            str_cpy(nb + str_len(nb), "x", 2);
+            nb[str_len(nb)] = (char)('0' + rn);
+            nb[str_len(nb) + 1u] = 0;
+        }
+        cv_text_on(92, y + 1, &AF_S, nb, nb[0] ? T_TEXT : T_DIM, bg);
+        nb[0] = HEXD[(st->vel >> 4) & 15u];          /* the velocity, hex */
+        nb[1] = HEXD[st->vel & 15u];
+        nb[2] = 0;
+        cv_text_on(134, y + 1, &AF_S, nb, (st->n || st->hit) ? T_TEXT : T_DIM, bg);
+        if ((locks >> si) & 1u)                      /* a parameter lock on the step */
+            cv_rect(176, y + 5, 5, 3, T_ACCENT);
+    }
+}
 static void graph_roll(const track_t *t, uint16_t c)
 {
     uint32_t i, len = (uint32_t)t->p[P_SLEN], base = ui.bank * 16u, ncol, mask = scale_mask(t), held = pr_held();
@@ -2212,7 +2280,7 @@ static void draw_graph(void)
             if (drum_track(t))
                 graph_grid(t, c);
             else
-                graph_roll(t, c);
+                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows (the roll is kept in the file) */
             break;
         case GR_SCALE:
             graph_scale(t, c);
