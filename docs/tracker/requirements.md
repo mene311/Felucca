@@ -151,13 +151,38 @@ and mute per occurrence while arranging.
 
 ## Open questions
 
-- Q-M1. Row count for the MVP: 16 rows is free; is that enough to prove the
-  matrix, or does the MVP need 64 (record grows, bigger format change)?
-- Q-M2. MATRIX gestures: which keys select, edit a cell, toggle mute, move rows —
-  see [ui-input.md](ui-input.md) Q-U4.
-- Q-M3. Mute scope: notes only, or notes + that track's commands (motion) for the
-  occurrence?
-- Q-M4. Empty cells: a row with a track set to empty plays nothing for that
-  track — confirm (vs. inheriting the previous row).
-- Q1–Q4 from earlier review still apply to phases 2–5 (pattern record shape,
-  `NSTEP` banks, storage location, block-ref timing is now answered by ADR-0009).
+### Blocking v1
+
+- **Q-M1. Song rows for v1: 16 or 64?** 16 rows is free (current record); 64
+  needs a bigger format change (record grows). Default if unanswered: **16**.
+- **Q-P1. Upstream base.** Build v1 on Felucca 1.1.5.1 now, or wait for
+  upstream's planned 1.2 reorganisation (fewer pages)? Building now risks a
+  larger merge later; waiting delays v1. Default if unanswered: build now on
+  1.1.5.1, merge 1.2 when it lands.
+- **Q-P2. Hardware testing.** v1 needs at least one flash test on a real FM-1
+  (the emulator proves logic, not the panel). Who flashes: the maintainer via
+  the browser installer, or driven from the laptop?
+- **Q-P3. Naming.** What the fork/release is called publicly and in ABOUT
+  (candidate: “Felucca Tracker”, crediting upstream as required by GPL).
+- **Q-P4. Two mutes.** The matrix mute (per occurrence, notes only) and the
+  mixer's track MUTE (persistent) are different things — confirm that the
+  mixer page keeps its mute unchanged, and that the mockups must distinguish
+  them visually.
+
+### Settled during v1 review
+
+- Q-M2 (matrix gestures) → settled in the MATRIX renders for sign-off;
+  Q-U1–Q-U5 in [ui-input.md](ui-input.md) are the same class.
+- Q-M3 (mute scope) → **notes only** ([adr/0012](adr/0012-matrix-cell-semantics.md)).
+- Q-M4 (empty cells) → **inherit**, with the arrangement looping from row 1
+  ([adr/0012](adr/0012-matrix-cell-semantics.md), [adr/0015](adr/0015-arrangement-loops.md)).
+
+### Engineering decisions (maintainer, unless objected)
+
+- Command default kind: **per-row lock** (Renoise-like), shown by a marker;
+  *event* (value holds) is the explicit alternative.
+- Instrument list composition: ~65 factory sounds + 32 user presets, one byte.
+- Existing MIXER page is enough for v1 — no new mixer work.
+
+Later releases: Q1–Q4 (pattern record shape, `NSTEP` banks, storage location,
+block-ref timing).
