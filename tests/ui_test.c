@@ -165,6 +165,7 @@ static int check(const char *what, int ok)
 /* main.c felucca_init */
 static void ui_power_on(void)
 {
+    pr_roll_force = 1;                               /* this suite audits the piano roll's drawing (the tracker is ui_render's) */
     uint32_t i;
     memset(trk, 0, sizeof trk);
     memset(&song, 0, sizeof song);
