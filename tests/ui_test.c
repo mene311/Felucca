@@ -2555,7 +2555,7 @@ static int test_presets_knob(void)
                 sel_ok &= song.g[G_SLOT] == slot + 1 && same_snd && same_steps;
             } else if (g == GR_PATS) {
                 sel_ok &= pat_pick() == ppick + 1u && same_snd && same_steps;
-            } else if (g == GR_SONG) {
+            } else if (g == GR_SONG || g == GR_MATRIX) {
                 sel_ok &= same_snd && same_steps && ui.page == i;
             } else if (g == GR_EVENTS) {               /* (AUTOMATION: its row, PLAY's to the first record's) */
                 sel_ok &= same_snd && same_steps && ui.page == i && ui.ev_row == 1u;
@@ -2571,7 +2571,7 @@ static int test_presets_knob(void)
         }
     }
     bad += check("#92 PRESETS on STEP: the step cursor; the sound and the steps stay", cur_ok && n_cur == 1u);
-    bad += check("#94 PRESETS on USER, PROJECT, PHRASES, SONG, AUTOMATION: the selection (KNOB 1's); nothing loaded", sel_ok);
+    bad += check("#94 PRESETS on USER, PROJECT, PHRASES, SONG, MATRIX, AUTOMATION: the selection (KNOB 1's); nothing loaded", sel_ok);
     bad += check("#94 PRESETS on TOOLS does nothing", tools_ok);
     bad += check("#94 PRESETS elsewhere (EDIT, ENV, LFO, FX, SCL, ARP, MIXER, GLOBAL, ...): the next sound, the steps stay",
                  snd_ok && n_snd >= 15u);
@@ -2626,7 +2626,7 @@ static int test_page_cycles(void)
     for (i = 0; i < NPAGES; i++) {                       /* every page in a family its button reaches, and its LED */
         uint32_t f = PAGES[i].fam;
         ok &= f != FAM_SEQ || PAGES[i].graph == GR_ROLL || PAGES[i].graph == GR_EVENTS;
-        ok &= f != FAM_GLO || PAGES[i].graph == GR_SONG;   /* (1.2: GLO's only page) */
+        ok &= f != FAM_GLO || PAGES[i].graph == GR_SONG || PAGES[i].graph == GR_MATRIX;   /* (1.2: SONG; the grid added) */
         ok &= f != FAM_TRK || PAGES[i].graph == GR_TRK || str_eq(PAGES[i].title, "CLOCK");   /* HOME's: MIXER CLOCK */
         ok &= PAGES[i].graph != GR_TRK || f == FAM_TRK;
         ui_power_on(); ui.home = 0; ui.page = (uint8_t)i; page_entered();
@@ -2635,7 +2635,7 @@ static int test_page_cycles(void)
     }
     for (i = 0; i < NPAGES; i++)
         ok &= !str_eq(PAGES[i].title, "PATTERN") && !str_eq(PAGES[i].title, "CHANCE") && !str_eq(PAGES[i].title, "AUTO LIST");
-    bad += check("1.2: SEQ has STEP and AUTOMATION only; SONG is GLO's only page, PHRASES SAVE's, MIXER and CLOCK HOME's "
+    bad += check("1.2: SEQ has STEP and AUTOMATION only; MATRIX and SONG are GLO's pages, PHRASES SAVE's, MIXER and CLOCK HOME's "
                  "(their LED HOME)", ok);
     {   /* 1.2: GLOBAL and SYSTEM are gone; their knobs: BPM SWG CLK on HOME > CLOCK, TUNE and ROUT on no page (the MENU's),
          * MIDI SYNC CPU on none (INFO shows the USB state and the CPU) */
@@ -2662,20 +2662,20 @@ static int test_page_cycles(void)
         else if (PAGES[i].graph == GR_PATS) ui.fam_last[FAM_SEQ] = (uint8_t)i;
     ui.fam_last[FAM_SAVE] = 200u;
     ui.fam_last[FAM_ENV] = 250u;
-    open_family(FAM_GLO); ok = str_eq(cur_page()->title, "SONG");
+    open_family(FAM_GLO); ok = str_eq(cur_page()->title, "MATRIX");
     open_family(FAM_SEQ); ok &= cur_page()->graph == GR_ROLL;
     open_family(FAM_ENV); ok &= str_eq(cur_page()->title, "ENV");
     open_family(FAM_SAVE); ok &= str_eq(cur_page()->title, "USER");
-    open_family(FAM_GLO); open_family(FAM_GLO);          /* SONG again (its only page) */
+    open_family(FAM_GLO); open_family(FAM_GLO);          /* the second GLO page: SONG (up to 1.1.5 its only one) */
     ok &= str_eq(cur_page()->title, "SONG");
-    go_home(); open_family(FAM_GLO); ok &= str_eq(cur_page()->title, "SONG");
+    go_home(); open_family(FAM_GLO); ok &= str_eq(cur_page()->title, "MATRIX");
     for (i = 0; i < 256u; i++) {                         /* any remembered index (the old GLOBAL 25, SYSTEM 27, ..) */
         go_home(); ui.fam_last[FAM_GLO] = (uint8_t)i; open_family(FAM_GLO);
-        ok &= str_eq(cur_page()->title, "SONG") && ui.fam_last[FAM_GLO] == ui.page;
+        ok &= (str_eq(cur_page()->title, "SONG") || str_eq(cur_page()->title, "MATRIX")) && ui.fam_last[FAM_GLO] == ui.page;
         go_home(); ui.fam_last[FAM_TRK] = (uint8_t)i; press(B_HOME);
         ok &= cur_page()->graph == GR_TRK && !ui.home;
     }
-    bad += check("1.2: a remembered page no longer in its family (or none) lands on the family's first; GLO always SONG, "
+    bad += check("1.2: a remembered page no longer in its family (or none) lands on the family's first; GLO gives a GLO page, "
                  "HOME always the MIXER first", ok);
 
     /* AUTOMATION: + ADD CHANCE / RATCH, the knobs, EDIT: the step's fields only */
@@ -2766,13 +2766,13 @@ static int test_product_ux(void)
         if (!page_visible(i))
             continue;
         press(B_REC);
-        if (PAGES[i].graph == GR_SONG)
+        if (PAGES[i].graph == GR_SONG || PAGES[i].graph == GR_MATRIX)
             ok &= song.rec == 0 && !transport_req && msg_is("[SEQ] TO RECORD");
         else if (PAGES[i].graph == GR_ROLL)            /* #133: STEP's roll arms step recording, stopped */
             ok &= song.rec == 1 && !transport_req && ui.page == i && !ui.home;
         else ok &= song.rec == 1 && transport_req == 1 && ui.page == i && !ui.home;
     }
-    bad += check("REC stays on every page, SONG stopped asks for pattern recording (STEP: step recording, stopped)", ok);
+    bad += check("REC stays on every page, SONG/MATRIX stopped ask for pattern recording (STEP: step recording, stopped)", ok);
     ui_power_on(); hold(B_HOME); press(B_REC);
     bad += check("REC in the MENU does nothing (the menu stays, no arm, no transport start)",
                  ui.menu == 1 && song.rec == 0 && !transport_req);
@@ -2817,10 +2817,10 @@ static int test_product_ux(void)
     bad += check("1.2: HOME held still opens the menu", ui.menu == 1);
     ui_power_on();
     frames(320);                                       /* (taps further apart than a double tap: #83) */
-    press(B_GLO); frames(320); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "SONG");
+    press(B_GLO); frames(320); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
     press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "SONG") && cur_page()->fam == FAM_GLO && !ui.home;
-    go_title("CLOCK"); press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "SONG");
-    bad += check("1.2: GLO opens SONG directly, again SONG (no GLOBAL, no SYSTEM, no MIXER)", ok);
+    go_title("CLOCK"); press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "MATRIX");
+    bad += check("FM-1 TRACKER: GLO opens MATRIX (the grid), a second tap SONG (no GLOBAL, no SYSTEM, no MIXER)", ok);
     go_home(); btn_down(B_SEQ); frames(500);
     ok = ui.layer == LAYER_SEQ && ui.home;
     btn_up(B_SEQ); frame();
