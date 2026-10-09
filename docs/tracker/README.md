@@ -49,6 +49,8 @@ decision log. **Code follows these documents — not the other way round.**
   motion record.
 - **Lock / event** — the two motion record kinds: a lock applies on its row only,
   an event sets the value and it holds (`MOTION_LOCK`, `motion.c`).
+- **Note column** — one of a track's 1..4 monophonic note lanes; chords are
+  written across columns (ADR-0014).
 - **Instrument** — an engine + preset pair selectable per row (proposed).
 - **LPB** — lines per beat. Felucca's `DIV` is the per-track equivalent.
 

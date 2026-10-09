@@ -137,3 +137,5 @@ as a fallback and for auditioning. No entry depends on them.
   confirm/cancel (platform idiom).
 - Q-U4. Matrix gestures (cell select, mute toggle, row ops) — see Q-M2 in
   [requirements.md](requirements.md).
+- Q-U5. Note columns on the tracker screen: how many are visible at once, how
+  they are added/removed, and how focus moves between them.

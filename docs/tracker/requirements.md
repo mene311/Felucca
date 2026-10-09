@@ -96,12 +96,16 @@ and mute per occurrence while arranging.
 
 ## v2 — Tracker view and commands
 
-- R4.0 **Note semantics**: a row that triggers notes holds them; empty rows do
-  not end them; an explicit OFF row releases everything the track holds
-  ([adr/0013](adr/0013-notes-hold-until-off.md)). A new note does not implicitly
-  cut held notes. `step_t` gains an OFF state; TIE/REST are redefined.
-- R4.1 A TRACKER screen with rows and typed values: note, instrument, velocity,
-  command columns, and the OFF entry.
+- R4.0 **Note semantics** ([adr/0013](adr/0013-notes-hold-until-off.md),
+  [adr/0014](adr/0014-note-columns.md)): each track carries 1..4 note columns.
+  A column is monophonic — a new note cuts the previous note in that column
+  unless glide is on, in which case it glides from it (existing slide /
+  `P_GLIDE` path). A note otherwise holds until an OFF row in its column; empty
+  rows do not end it. Chords are written across columns on the same row. OFF is
+  per column. `step_t` gains an OFF state and the glide flag; TIE/REST are
+  redefined in the v2 data-model update.
+- R4.1 A TRACKER screen with rows and typed values: 1..4 note columns per track
+  (add/remove), instrument, velocity, command columns, and the OFF entry.
 - R4.2 Commands resolve to motion records `(track, row, param, value)` with kind
   *lock* (row only) or *event* (holds); addressable ids are `motion_param()`-eligible.
 - R4.3 Motion capacity becomes **per track and ≥ 256 records per pattern**

@@ -1,5 +1,10 @@
 # ADR-0013: Notes hold until an OFF row
 
+> **Amended 2026-10-09:** per-column monophony and glide are refined by
+> [ADR-0014](0014-note-columns.md) — within one note column a new note cuts the
+> previous unless glide is on; held notes otherwise accumulate **across columns**
+> until an OFF.
+
 - Status: accepted (2026-10-09) — product call; playback semantics land with v2
 - Deciders: mene311
 
@@ -14,8 +19,9 @@ explicit note endings: a note sounds until you say stop.
 - A row that triggers notes **holds** them.
 - **Empty rows do not end them** — the notes keep sounding across the pattern.
 - An explicit **OFF** row releases everything the track is holding.
-- A new note does **not** implicitly cut the held ones; held notes accumulate
-  until OFF (the track's voice budget, shared across tracks, applies).
+- Within one note column a new note cuts the previous unless glide is on;
+  held notes accumulate across columns until OFF (the track's voice budget,
+  shared across tracks, applies) — see [ADR-0014](0014-note-columns.md).
 
 ## Consequences
 
