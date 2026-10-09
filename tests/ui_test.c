@@ -2662,7 +2662,7 @@ static int test_page_cycles(void)
         else if (PAGES[i].graph == GR_PATS) ui.fam_last[FAM_SEQ] = (uint8_t)i;
     ui.fam_last[FAM_SAVE] = 200u;
     ui.fam_last[FAM_ENV] = 250u;
-    open_family(FAM_GLO); ok = str_eq(cur_page()->title, "MATRIX");
+    open_family(FAM_GLO); printf("DBG rem title=%s page=%u fl=%u\n", cur_page()->title, ui.page, ui.fam_last[FAM_GLO]); ok = str_eq(cur_page()->title, "MATRIX");
     open_family(FAM_SEQ); ok &= cur_page()->graph == GR_ROLL;
     open_family(FAM_ENV); ok &= str_eq(cur_page()->title, "ENV");
     open_family(FAM_SAVE); ok &= str_eq(cur_page()->title, "USER");
@@ -2820,7 +2820,7 @@ static int test_product_ux(void)
     ui_power_on();
     ui.fam_last[FAM_GLO] = 0u;                         /* no remembered GLO page: its first */
     frames(320);                                       /* (taps further apart than a double tap: #83) */
-    press(B_GLO); frames(320); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
+    press(B_GLO); frames(320); printf("DBG glo1 title=%s page=%u fl=%u\n", cur_page()->title, ui.page, ui.fam_last[FAM_GLO]); ok = cur_page()->fam == FAM_GLO && str_eq(cur_page()->title, "MATRIX");
     press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "SONG") && cur_page()->fam == FAM_GLO && !ui.home;
     go_title("CLOCK"); press(B_GLO); frames(320); ok &= str_eq(cur_page()->title, "MATRIX");
     bad += check("FM-1 TRACKER: GLO opens MATRIX (the grid), a second tap SONG (no GLOBAL, no SYSTEM, no MIXER)", ok);
