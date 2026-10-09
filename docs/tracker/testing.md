@@ -51,8 +51,18 @@ clang -O1 -w "-DFELUCCA_VERSION=\"$FV\"" -Ibuild/gen -Ifirmware/src -Itests \
 **Browser emulator (the interactive bench for typing)**
 
 ```sh
-PATH=/usr/lib/emscripten:$PATH sh web/emu/build.sh     # → build/emu/
+PATH=/usr/lib/emscripten:$PATH sh web/emu/build.sh     # -> build/emu/
 python3 -m http.server 8080 --directory build/emu      # open http://localhost:8080
+```
+
+**Secure context is required for audio**: AudioWorklet (and Web MIDI) only exist
+in a secure context. `http://localhost:8080` is one; a plain `http://<lan-ip>:8080`
+or `http://<tailscale-ip>:8080` is **not** — the page loads but fails with
+"Cannot read properties of undefined (reading 'addModule')". For other devices,
+serve it over HTTPS:
+
+```sh
+sudo tailscale serve --bg 8080        # -> https://<host>.<tailnet>.ts.net/ (valid cert)
 ```
 
 ## Definition of done (per change)
