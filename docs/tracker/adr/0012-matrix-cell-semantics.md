@@ -1,5 +1,10 @@
 # ADR-0012: Matrix cell semantics — inherit, mute gesture B, notes-only mute
 
+> **Amended 2026-10-09 (v1 closure):** the v1 mute is upstream's `-`
+> (`CHAIN_SILENT`): no format change, no new field. A mute flag that preserves
+> the pattern reference is deferred to v1.x (packing rows frees the 32 bytes it
+> would need).
+>
 > **Amended 2026-10-09 (later):** upstream 1.4 already provides per-track slots,
 > `CHAIN_SILENT` (`−`) and inherit-on-add (a new section copies the previous one).
 > What remains open is whether to add a mute flag that preserves the reference

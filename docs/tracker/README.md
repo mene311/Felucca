@@ -16,7 +16,8 @@ decision log. **Code follows these documents — not the other way round.**
 | --- | --- | --- |
 | pre-release | Design docs (this set) | draft — under review |
 | pre-release | Dev loop (phone host builds, laptop toolchain, browser emulator) | **done** |
-| **v1 (MVP)** | Loop the arrangement · MATRIX grid screen · row move/reorder · mute policy · branding **FM-1 TRACKER** · hardware-validated 3:30 song (upstream 1.4 already ships the per-track matrix data and SONG editing — [adr/0016](adr/0016-rebase-on-1.4.md)) | not started |
+| **v1 (MVP)** | Matrix capability via upstream 1.4 (per-track sections, `-` mute, repeats) · **loop** · **FM-1 TRACKER branding** | **simulator-ready** |
+| v1.x | MATRIX grid screen · row move/reorder · hardware-validated 3:30 song | renders for sign-off next |
 | v2 | Tracker view + hex command columns over the motion system | not started |
 | v3 | Per-step instrument byte | not started |
 | v4 | Capacity: pattern pool 8–16, order list 64 rows | not started |

@@ -81,6 +81,29 @@ python3 -m http.server 8080 --directory build/emu      # open http://localhost:8
 | v4 | pool 8–16 slots; 64-row order list; storage option round-trip + recovery; flash map checks |
 | v5 | `DIV` 1/64 / 1/128 / triplets timing; `NSTEP` 128 banks, protocol step index, motion `place` under 128 |
 
+## Hardware and flashing safety
+
+The device is never the first test: host tests → emulator → package check →
+hardware ([adr/0003](adr/0003-pattern-pool-and-storage.md) era builds only touch
+flash on explicit save; an interrupted *installer* run is the only bricking window).
+
+Before the first hardware flash of FM-1 TRACKER:
+
+- `sh build.sh` produced the package; its own checks ran (image, CRC, layout).
+- The installer funnel is dry-run: `python3 tests/install_test.py` (simulated
+  FM-1) and `node web/test_web.mjs` both green.
+- Keep the **official V15 package** at hand; the web installer's **Return to
+  official V15** restores it, M-VAVE's M-UPGRADE also installs it.
+- Charged battery, a data cable, every other MIDI/USB app closed, transport
+  stopped, no pending save.
+- If the FM-1 stays dark: it should enumerate as **WL80UBOOT** (or mass storage
+  4C4A:8057) — retry the web installer; last resort is FM-1 Transporter (XIAO
+  RP2040) reading/writing the flash.
+- Record the package SHA256 and the result in the release notes.
+
+Hardware acceptance (v1): a **3:30 song built from the 4 patterns at 32 lines**
+plays on the unit, loops from the first section, and sections mix tracks.
+
 ## Regression policy
 
 - `golden.txt` and `cpu_baseline.txt` move only with an intentional, documented

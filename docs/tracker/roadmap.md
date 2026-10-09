@@ -13,11 +13,19 @@ Scope is frozen by the requirements it implements.
 
 ## v1 (MVP) — Pattern matrix over four patterns
 
+**State: simulator-ready.** Delivered: the matrix capability via upstream 1.4
+(per-track section slots, `-` silent, repeats, add/delete, inherit-on-create),
+the arrangement **loop** (ADR-0015), and the **FM-1 TRACKER** name
+(splash/ABOUT/version `v1.4-tr1`). Host tests green (`tests/run_tests.sh`), the
+browser emulator rebuilt and served.
+
+Still to do for the hardware milestone: the MATRIX bird's-eye screen and row
+move/reorder (renders for sign-off first), then the flash + 3:30 hardware test.
+
 - Goal: arrange by repeating, mixing and matching and muting the four existing
   patterns. The MATRIX is the default arrangement surface (ADR-0010). v1 works
-  with 32-line patterns (ADR-0011); blank cells inherit, mute is per-cell with
-  gesture B and notes-only scope (ADR-0012); playback loops from the first row
-  (ADR-0015).
+  with 32-line patterns (ADR-0011); blank cells inherit, mute is upstream's `-`
+  (ADR-0012); playback loops from the first row (ADR-0015).
 - Deliverables:
   - Matrix rows: per-track refs (4 bits/track), repeat, per-track mute mask;
     insert / delete / duplicate / move (16 rows, R1).
