@@ -3,27 +3,28 @@
 Status: draft. All sizes verified against the tree (1.1.5.1). Proposed items are
 marked **proposed**.
 
-## Current structures (verified)
+## Current structures (verified on Felucca 1.4)
 
 ```c
-/* core.h */
-typedef struct {                 /* 11 bytes in RAM; 9 packed on disk (FUN9) */
-    uint8_t note[4];             /* up to 4 notes per step (chord) */
-    uint8_t n;                   /* notes in use, 0 = empty */
-    uint8_t time;                /* ST_NOTE / ST_TIE / ST_REST */
-    uint8_t flags;               /* SF_ACCENT | SF_SLIDE | SF_RATCH (bits 3..4) */
-    uint8_t vel;                 /* 0..127 */
-    uint8_t hit;                 /* drum lanes (bit per lane) */
-    uint8_t acc;                 /* accent bit per hit */
-    uint8_t probability;         /* 0 = 100%; 1..100; 101 = silent */
+typedef struct {                 /* 11 bytes in RAM; 9 packed on disk */
+    uint8_t note[4];             /* up to 4 notes per step */
+    uint8_t n, time, flags, vel, hit, acc, probability;
 } step_t;
 
-typedef struct { uint8_t place, param; int16_t value; } motion_event_t;   /* 4 B */
-typedef struct { uint8_t count, on, rsv[2]; motion_event_t event[64]; } motion_store_t; /* 260 B */
+typedef struct { uint8_t place, param; int8_t value; } motion_event_t;       /* 3 B */
+typedef struct { uint8_t count, on, rsv[2]; motion_event_t event[128]; } motion_store_t; /* 388 B */
+#define MOTION_MAX 128u          /* shared by the four tracks (1.2/FUN10: 64 before) */
 
-typedef struct { uint8_t slot, repeat; } chain_row_t;                     /* 2 B */
-typedef struct { uint8_t count, rsv[3]; chain_row_t row[16]; } chain_config_t; /* 20 B; CHAIN_ROWS 16 */
+#define CHAIN_ROWS 16u
+#define CHAIN_SILENT 4u          /* "-": that track plays nothing in the section */
+typedef struct { uint8_t slot[NTRK], repeat; } chain_row_t;                  /* 5 B */
+typedef struct { uint8_t count, rsv[3]; chain_row_t row[16]; } chain_config_t; /* 84 B */
 ```
+
+Upstream 1.4 already ships the matrix data model and its SONG-page editing
+(section / track / pattern A-D or "-" / repeats; a new section copies the
+previous one). Playback stops at the last section — looping
+([adr/0015](adr/0015-arrangement-loops.md)) is ours to add.
 
 - Track: `int16_t p[P_COUNT]` (P_COUNT = 99 in 1.1) + `step_t step[NSTEP]` +
   runtime state; `NSTEP` = 64.
@@ -112,9 +113,9 @@ typedef struct { uint8_t count, rsv[3]; chain_row_t row[16]; } chain_config_t;  
 | Region | Limit | Used (stock) | Notes |
 | --- | --- | --- | --- |
 | `.ram_text` | 0x6000 (24 KB) | 916 insns | code in RAM |
-| `.data + .bss` | 98,304 B | **91,220 B** | ~7 KB spare |
-| POOL | 344,064 B | **331,204 B** | ~12.8 KB spare |
-| `.noinit` | 15,696 B | 14,592 B (4 slots) | 1.1 KB spare; guard above |
+| `.data + .bss` | 98,304 B | **94,420 B** (1.4) | ~3.9 KB spare |
+| POOL | 344,064 B | **332,100 B** (1.4) | ~12 KB spare |
+| `.noinit` | 15,696 B | 4 x 3,840 B slots (1.4) + crash record | guard above; no room to grow |
 
 Implication: extra per-pattern caches do **not** fit by default; the plan is
 on-demand loading of pool entries with only the active + next pattern live.
