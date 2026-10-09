@@ -3824,7 +3824,7 @@ static int test_quick_layers(void)
         btn_down(LB[i]);
         for (flash = 0, k = 0; k < 20u; k++) { frame(); flash |= ui.layer; }      /* 0.32 s */
         btn_up(LB[i]); frame();
-        ok &= !flash && !ui.home && (LB[i] == B_GLO ? str_eq(cur_page()->title, "SONG") :
+        ok &= !flash && !ui.home && (LB[i] == B_GLO ? cur_page()->fam == FAM_GLO :
                                      LB[i] == B_SCL ? cur_page()->fam == FAM_SCL : str_eq(cur_page()->title, "EDIT 1"));
         hint &= msg_is(HINT[i]);
         go_home(); frame();
