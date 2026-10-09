@@ -73,13 +73,14 @@ python3 -m http.server 8080 --directory build/emu      # open http://localhost:8
 
 ## Per-phase test matrix
 
-| Phase | New tests |
+| Release | New tests |
 | --- | --- |
-| 1 | order list: insert/delete/move/duplicate/repeat; 64-row playback order; pool 8 slots; FUN10 round-trip + downgrade refusal; protocol ops |
-| 2 | per-track motion capacity; lock vs event semantics at row start; pan/delay timing (frame-accurate); UI input simulation for hex entry (ui_test); golden playback of a scripted pattern |
-| 3 | instrument apply before note-on; same-engine vs cross-engine switch (fade path); undo; protocol step byte |
-| 4 | block refs: alias edits, mute per occurrence, matrix render lint |
-| 5 | `DIV` 1/64 / 1/128 / triplets timing; `NSTEP` 128 banks, protocol step index, motion `place` under 128 |
+| v1 (MVP) | matrix rows: insert/delete/move/duplicate/repeat; 64-row playback order; pool 8 slots; FUN10 round-trip + downgrade refusal; protocol ops |
+| v2 | per-track motion capacity; lock vs event semantics at row start; pan/delay timing (frame-accurate); UI input simulation for hex entry (ui_test); golden playback of a scripted pattern |
+| v3 | instrument apply before note-on; same-engine vs cross-engine switch (fade path); undo; protocol step byte |
+| v5 | timing: alias edits, mute per occurrence, matrix render lint |
+| (v4) | capacity: pool 8+, 64 rows |
+| v5 | `DIV` 1/64 / 1/128 / triplets timing; `NSTEP` 128 banks, protocol step index, motion `place` under 128 |
 
 ## Regression policy
 

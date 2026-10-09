@@ -32,7 +32,7 @@ and mute per occurrence while arranging.
 - N3. New engines or DSP work beyond what the features need.
 - N4. Breaking SysEx changes for existing editors.
 
-## MVP — Pattern matrix over four patterns (phase 1)
+## v1 (MVP) — Pattern matrix over four patterns
 
 ### R1 — Matrix rows
 
@@ -82,7 +82,7 @@ and mute per occurrence while arranging.
 - R3.5 **Acceptance**: conversion round-trip test; corrupt-sector recovery test;
   protocol tests; existing editors remain functional.
 
-## Phase 2 — Tracker view and commands
+## v2 — Tracker view and commands
 
 - R4.1 A TRACKER screen with rows and typed values: note, instrument, velocity,
   command columns.
@@ -96,21 +96,21 @@ and mute per occurrence while arranging.
 - R4.6 Acceptance: lock/event semantics, undo, save/load round-trip, per-track
   capacity, frame-accurate delay test, UI input simulation.
 
-## Phase 3 — Instruments per row
+## v3 — Instruments per row
 
 - R5.1 Every row selects an instrument (engine + factory/user preset), one byte.
 - R5.2 Applied before the row's note-ons; cross-engine uses the fade path.
 - R5.3 Acceptance: timbre change verified from that row on; documented caveat
   that release tails morph (track-level parameters).
 
-## Phase 4 — Capacity (deferred)
+## v4 — Capacity (deferred)
 
 - R6.1 Pattern pool 8–16 and order list 64 rows, per
   [adr/0003](adr/0003-pattern-pool-and-storage.md) — only once the MVP matrix is
   accepted and the storage question (Q3) is resolved.
 - R6.2 Per-track block storage split (steps+commands vs full records) if needed.
 
-## Phase 5 — Timing
+## v5 — Timing
 
 - R7.1 `DIV` gains `1/64` (LPB 16), `1/128` (LPB 32), `32T`, `64T`.
 - R7.2 `NSTEP` 64 → 128 paired in the same phase.

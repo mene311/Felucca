@@ -1,5 +1,6 @@
 # ADR-0009: MVP is the pattern matrix over four patterns
 
+- Release: **v1**, the first public release of the fork (product call).
 - Status: accepted (2026-10-09) — supersedes the phasing in
   [ADR-0006](0006-arrangement-model.md)
 - Deciders: mene311 (product call)

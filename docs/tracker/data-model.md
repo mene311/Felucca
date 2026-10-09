@@ -140,7 +140,7 @@ Dual copies double the numbers.
 
 ## Capacity summaries (proposed)
 
-| Resource | Today | Phase 1 (MVP) | Phase 2 | Phase 4 |
+| Resource | Today | v1 (MVP) | v2 | v4 |
 | --- | --- | --- | --- | --- |
 | Unique patterns | 4 | 4 | 4 | 8–16 |
 | Order-list rows | 16 | 16 | 16 | 64 |

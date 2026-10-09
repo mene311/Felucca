@@ -20,10 +20,10 @@ region ~12.8 KB spare.
 
 ## Decision
 
-- **Phase 1**: keep the full-record model for the pool, sized for 8 slots
+- **v4, option A**: keep the full-record model for the pool, sized for 8 slots
   (single 4 KB sector per slot, no A/B copy) **or** 8 slots with A/B copies by
   reclaiming 32 KB from the sample area. The final choice is Q3.
-- **Phase 2+**: evaluate the split model — a **steps+commands-only pattern pool**
+- **v4, option B**: evaluate the split model — a **steps+commands-only pattern pool**
   with the sound state (parameters, FM6 patches) stored once per song. This is
   the tracker-native shape: patterns are notes+commands; instruments/sounds are
   song state (see ADR-0004).

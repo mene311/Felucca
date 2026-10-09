@@ -1,9 +1,9 @@
 # Roadmap
 
-Status: draft. Phases ship in order; each is accepted before the next starts.
+Status: draft. Releases ship in order; each is accepted before the next starts.
 Scope is frozen by the requirements it implements.
 
-## Phase 0 — Foundations
+## Pre-release — Foundations (done)
 
 - Deliverables: `docs/tracker/*`, dev loop (host builds on the phone, toolchain
   and emulator on the laptop), the `aa_raster.py` no-Raqm fallback.
@@ -11,7 +11,7 @@ Scope is frozen by the requirements it implements.
   passes `emu_test.mjs`.
 - State: docs in review; everything else **done**.
 
-## Phase 1 (MVP) — Pattern matrix over four patterns
+## v1 (MVP) — Pattern matrix over four patterns
 
 - Goal: arrange by repeating, mixing and matching and muting the four existing
   patterns.
@@ -26,7 +26,7 @@ Scope is frozen by the requirements it implements.
 - Exit: R1–R3 accepted; conversion and corrupt-record tests green; UI lint and
   alignment clean; a demo song built from 4 patterns with mixed rows and mutes.
 
-## Phase 2 — Tracker view and commands
+## v2 — Tracker view and commands
 
 - Goal: type notes and effects row by row.
 - Deliverables: TRACKER screen (cursor, hex entry, keycap hints); per-track
@@ -36,7 +36,7 @@ Scope is frozen by the requirements it implements.
 - Exit: R4 accepted; frame-accurate delay test; golden playback of a scripted
   pattern; UI lint/alignment clean.
 
-## Phase 3 — Instruments per row
+## v3 — Instruments per row
 
 - Goal: `C-4 XX` — any instrument on any row.
 - Deliverables: instrument table (~65 factory + 32 user), per-row `inst` byte,
@@ -44,7 +44,7 @@ Scope is frozen by the requirements it implements.
 - Exit: R5 accepted; documented tail-morph caveat verified; no CPU budget
   regression.
 
-## Phase 4 — Capacity
+## v4 — Capacity
 
 - Goal: more patterns and longer arrangements, once the matrix is proven.
 - Deliverables: pool 8–16 slots, order list 64 rows; storage decision (Q3)
@@ -53,7 +53,7 @@ Scope is frozen by the requirements it implements.
 - Exit: R6 accepted; pool round-trip and recovery tests; flash map documented
   and within budget.
 
-## Phase 5 — Timing
+## v5 — Timing
 
 - Goal: breakcore granularity.
 - Deliverables: `DIV` 1/64, 1/128, 32T, 64T; `NSTEP` 128 (banks, protocol index,

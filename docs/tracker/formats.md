@@ -49,7 +49,7 @@ chain: count u8, rsv[3];  rows x16:
 ```
 
 - Conversion FUN9 → FUNA: `{slot, repeat}` becomes four equal refs, mute 0.
-- Phase 2 grows the packed step (9 → 12 B: instrument, pan, delay) and the
+- v2 grows the packed step (9 → 12 B: instrument, pan, delay) and the
   motion block (per-track stores) — a **size change** at that point, with its own
   format revision and `_Static_assert`s.
 - Size budgeting (phase 2, for orientation): steps 4×64×12 = 3,072 B; motion
