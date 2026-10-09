@@ -939,6 +939,7 @@ static void setup(int s)
     case S_TRACKER: {
         uint32_t k;
         song.rec = 0; go_page(GR_ROLL);
+        printf("DBG tracker scene force=%u drum=%d page=%s\n", pr_roll_force, (int)drum_track(TSEL), cur_page()->title);
         for (k = 0; k < 16u; k++) {
             step_t *st = &TSEL->step[k];
             st->note[0] = 0; st->n = 0; st->time = ST_REST; st->flags = 0; st->vel = 0;
