@@ -177,12 +177,9 @@ static void chain_tick(uint32_t n)
         chain.remaining--;
         return;
     }
-    if (chain.row + 1u >= chain.config.count) {
-        seq_stop();
-        return;
-    }
+    /* the arrangement loops: the last section wraps to the first (ADR-0015) */
     chain.carry = t->seq_pos + n - length;
-    chain.row++;
+    chain.row = (uint8_t)(chain.row + 1u >= chain.config.count ? 0u : chain.row + 1u);
     chain.remaining = chain.config.row[chain.row].repeat;
     chain_apply();
 }
