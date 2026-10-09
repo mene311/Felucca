@@ -322,7 +322,9 @@ static int screens(void)
         bad += check("  RATCH shows dimmed on a REST, a TIE or an empty step (a note or a hit: not)", ok);
         t->step[0] = (step_t){{0}, 0, ST_REST, 0, 0};
     }
-    ui_power_on();                                   /* the piano roll: x2 in two bars, the middle column empty */
+    ui_power_on();
+    pr_roll_force = 1;                               /* the roll's drawing (the STEP page draws the tracker by default) */
+                                                 /* the piano roll: x2 in two bars, the middle column empty */
     t = TSEL;
     track_defaults_steps(t);
     t->p[P_SLEN] = 16;

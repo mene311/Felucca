@@ -198,6 +198,7 @@ static void pr_bars(const step_t *st, int32_t x, int32_t w, uint16_t c, int acc_
  * (the roll returns as a MENU > DISPLAY option; ui_graph.c). */
 #define TR_Y0 6
 #define TR_RH 12
+uint8_t pr_roll_force;                              /* tests: draw the piano roll (and its audits) instead of the tracker */
 static void graph_tracker(const track_t *t, uint16_t c)
 {
     static const char HEXD[] = "0123456789ABCDEF";
@@ -2279,8 +2280,10 @@ static void draw_graph(void)
             cv_oy = 0;
             if (drum_track(t))
                 graph_grid(t, c);                    /* the drum grid stays the drum editor */
+            else if (pr_roll_force)                  /* (tests audit the roll's drawing: this flag picks it) */
+                graph_roll(t, c);
             else
-                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows (graph_roll kept for the menu option) */
+                graph_tracker(t, c);                 /* FM-1 TRACKER: the vertical rows (the roll returns as a menu option) */
             break;
         case GR_SCALE:
             graph_scale(t, c);

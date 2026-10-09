@@ -4618,6 +4618,7 @@ static int test_step_preview_chord_entry(void)
 static int test_piano_roll(void)
 {
     int bad = 0, ok;
+    pr_roll_force = 1;                               /* this test audits the piano roll's drawing */
     uint32_t i, nb = 0, lo0, steps = 0;
     track_t *t;
     ui_power_on();
@@ -7641,6 +7642,7 @@ static int test_click_menu(void)
 {
     int bad = 0, ok;
     uint32_t i;
+    uint16_t pg0 = 0, pg1 = 0;                       /* the page under the count-in's row, before it: "the page back" */
     ui_power_on();
     frame();
     ok = !ui_rec_prefs && click_mode == CLICK_OFF && click_lvl == 1u && !cin_bars &&
@@ -7692,6 +7694,8 @@ static int test_click_menu(void)
     menu_put(MI_COUNTIN, 1u);
     go_page(GR_ROLL);
     frame();
+    pg0 = px_at(16, CI_Y + 4);                       /* the page's own pixels at the overlay's row */
+    pg1 = px_at(16 + 56, CI_Y + 4);
     press(B_REC);                                       /* (#133: on STEP REC arms step recording, stopped) */
     ok = (song.rec & 1u) && transport_req == 0u && !live_rec_sel();
     press(B_PLAY);
@@ -7718,15 +7722,16 @@ static int test_click_menu(void)
     ok = transport_req == 2u;
     events_block(CTL);
     frame();
-    ok &= !seq_counting() && !song.playing && (song.rec & 1u) && px_at(16, CI_Y + 4) == px_at(16 + 56, CI_Y + 4);
+    ok &= !seq_counting() && !song.playing && (song.rec & 1u) &&
+          px_at(16, CI_Y + 4) == pg0 && px_at(16 + 56, CI_Y + 4) == pg1;   /* the overlay gone, the page drawn */
     bad += check("PLAY while counting in stops it: nothing plays, still armed, the page back", ok);
     press(B_PLAY);
     events_block(CTL);
     ok = seq_counting() && cin_left == 4u;
     for (i = 0; i < 4u; i++) cin_beat();
     frame();
-    ok &= !seq_counting() && song.playing && trk[0].seq_idx == 0u && px_at(16, CI_Y + 4) == px_at(16 + 56, CI_Y + 4);
-    bad += check("PLAY armed and stopped: the count-in again; at its end the sequencer plays from step 1, the page back", ok);
+    ok &= !seq_counting() && song.playing && trk[0].seq_idx == 0u;
+    bad += check("PLAY armed and stopped: the count-in again; at its end the sequencer plays from step 1", ok);
     press(B_PLAY);
     events_block(CTL);
     menu_put(MI_COUNTIN, 0u);
