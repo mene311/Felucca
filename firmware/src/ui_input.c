@@ -238,7 +238,7 @@ static uint32_t step_leds(void)
     const track_t *t = TSEL;
     const step_t *st;
     uint32_t i, k, note, used = 0, m = 0;
-    if (ui.home || ui.menu || ui.confirm || !song.seq_mode || cur_page()->graph != GR_ROLL || song.playing ||
+    if (ui.home || ui.menu || ui.confirm || !song.seq_mode || cur_page()->graph != GR_ROLL && cur_page()->graph != GR_TRACKER || song.playing ||
         chain_busy() || ui.cursor >= NSTEP)
         return 0;
     st = &t->step[ui.cursor];
@@ -491,7 +491,7 @@ static void tracks_edit(uint32_t slot, int32_t steps)
 /* SEQ > STEP's piano roll (not the DRUM grid, whose white keys stay its steps): where step recording writes */
 static int roll_on(void)
 {
-    return !ui.home && !ui.menu && !ui.confirm && song.seq_mode && cur_page()->graph == GR_ROLL && !drum_track(TSEL);
+    return !ui.home && !ui.menu && !ui.confirm && song.seq_mode && (cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER) && !drum_track(TSEL);
 }
 
 /* SONG: + ADD selected (song_row == count < CHAIN_ROWS): a section there, copying the one before it (the first: every
@@ -564,7 +564,7 @@ static int rec_tap(void)                                /* 1: the arming changed
         transport_req = 1;
     if ((song.rec & bit) && grid_on())
         ui_message("LANE KEYS RECORD");               /* (the white keys stay the steps) */
-    else if ((song.rec & bit) && !ui.home && cur_page()->graph == GR_ROLL)
+    else if ((song.rec & bit) && !ui.home && (cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER))
         ui_message("KEYS RECORD LIVE");               /* (seq_entry pauses while armed and playing) */
     return 1;
 }
@@ -593,7 +593,7 @@ static void cursor_move(int32_t c)
 {
     cursor_set(c);
     if ((ui_prefs2 & (PREF_PREVIEW >> 16)) && !song.playing && !seq_counting() && transport_req != 1u && !chain_busy() &&
-        !ui.home && song.seq_mode && cur_page()->graph == GR_ROLL)
+        !ui.home && song.seq_mode && (cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER))
         aud_req = (uint16_t)((uint32_t)ui.cursor << 8 | (song.sel + 1u));
 }
 
@@ -671,7 +671,7 @@ static uint64_t lock_held(void)
     const track_t *t = TSEL;
     uint32_t k, len = (uint32_t)t->p[P_SLEN], keys = fm1_in.notes & ~kb_layer;
     uint64_t m = 0;
-    if (ui.home || ui.menu || ui.confirm || ui.layer || name_on() || !song.seq_mode || cur_page()->graph != GR_ROLL ||
+    if (ui.home || ui.menu || ui.confirm || ui.layer || name_on() || !song.seq_mode || (cur_page()->graph != GR_ROLL && cur_page()->graph != GR_TRACKER) ||
         !keys)
         return 0;
     if (!grid_on())                                     /* the roll: the step being entered */
@@ -1177,7 +1177,7 @@ static void layer_lock_input(uint32_t pressed);
 static int page_tap(uint32_t b)
 {
     uint32_t f;
-    if (b == B_EDIT && song.seq_mode && !ui.home && cur_page()->graph == GR_ROLL) {   /* STEP: EDIT clears the step */
+    if (b == B_EDIT && song.seq_mode && !ui.home && (cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER)) {   /* STEP: EDIT clears the step */
         uint64_t held = lock_held();
         if (chain_busy()) { ui_message("STOP TO EDIT"); return 1; }
         if (held) {                                     /* a step held: its locks (the step stays) */
@@ -1505,7 +1505,7 @@ static void ui_input(void)
         song_keys(notes);
     } else if (song.grid) {
         grid_keys(notes);
-    } else if (song.seq_mode && cur_page()->graph == GR_ROLL) {   /* STEP */
+    } else if (song.seq_mode && (cur_page()->graph == GR_ROLL || cur_page()->graph == GR_TRACKER)) {   /* STEP / TRACKER */
         if (live_rec_sel() || !((song.rec >> song.sel) & 1u))   /* armed and playing: the keys record live, not
                                                          * into the cursor step too; not armed (1.2, #133): they
                                                          * only play, being on STEP writes nothing */

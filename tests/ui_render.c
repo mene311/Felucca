@@ -736,7 +736,7 @@ static void sg_fresh(void)
 #define E_FM (FELUCCA_FM4 ? ENGI_DIGITAL : ENGI_FM6)
 
 enum { S_HOME, S_HOME_IDLE, S_MESSAGE, S_MESSAGE_KEY, S_MESSAGE_NOFILE, S_PRESETS, S_PRESETS_NOFAV, S_USER, S_PHRASES, S_PROJECT, S_TOOLS,
-       S_SONG_EMPTY, S_SONG, S_MATRIX_EMPTY, S_MATRIX, S_STEP, S_AUTO_STEPS, S_AUTO_ADD_CHANCE, S_MOTION, S_DRUM, S_DRUM_HAND, S_DRUM_CYM, S_MIXER,
+       S_SONG_EMPTY, S_SONG, S_MATRIX_EMPTY, S_MATRIX, S_TRACKER, S_STEP, S_AUTO_STEPS, S_AUTO_ADD_CHANCE, S_MOTION, S_DRUM, S_DRUM_HAND, S_DRUM_CYM, S_MIXER,
        S_MIXER_HOME, S_MIXER_PAN,
        S_ENV, S_ENVDEST, S_LFO, S_MOD, S_FX, S_SLICER, S_DLY, S_SCL, S_CHORD, S_CHORD_WIDE, S_CHORD_OFF, S_CHORD_KIT, S_ARP, S_VOICE, S_CLOCK, S_MENU_MIDI,
        S_EDIT_ANALOG, S_EDIT_DIGITAL, S_OP_ENV, S_EDIT_WHEEL, S_EDIT_SAMPLE, S_EDIT_GRAIN, S_EDIT_PHYS,
@@ -760,7 +760,7 @@ enum { S_HOME, S_HOME_IDLE, S_MESSAGE, S_MESSAGE_KEY, S_MESSAGE_NOFILE, S_PRESET
        S_SONG_LANES, S_SONG_LANES_PLAYING, S_SONG_LANES_SILENT, S_SONG_PICTURES, S_HEAD_SLOT, S_HEAD_SLOT_EDITED, S_HEAD_SLOT_SONG,
        S_MENU_TUNE, S_MENU_INFO, S_HOME_TRACKS, S_HOME_TRACKS_STOPPED, S_HOME_TRACKS_HOT, S_MENU_HOME, S_COUNT };
 static const char *const S_NAME[S_COUNT] = {"home", "home_idle", "message", "message_key", "message_nofile", "presets", "presets_nofav", "user",
-    "phrases", "project", "tools", "song_empty", "song", "matrix_empty", "matrix", "step", "auto_steps", "auto_add_chance", "automation", "drum",
+    "phrases", "project", "tools", "song_empty", "song", "matrix_empty", "matrix", "tracker", "step", "auto_steps", "auto_add_chance", "automation", "drum",
     "drum_hand", "drum_cym", "mixer", "mixer_from_home", "mixer_pan", "env", "env_dest", "lfo", "mod", "fx", "slicer", "dly", "scl", "chord", "chord_wide", "chord_off", "chord_kit", "arp",
     "voice", "clock", "menu_midi", "edit_analog", FELUCCA_FM4 ? "edit_digital" : "edit_fm6", "op_env", "edit_wheel", "edit_sample",
     "edit_grain", "edit_phys", "alg_1", "alg_2", "alg_3", "alg_4", "alg_5", "alg_6", "alg_7", "alg_8", "op_level", "fm6_alg_01", "fm6_alg_05", "fm6_alg_22", "fm6_alg_32", "fm6_op", "fm6_op_fixed", "fm6_op2", "fm6_op_env", "fm6_op_env_rel", "confirm_seq", "confirm_project", "confirm_user", "confirm_pattern",
@@ -936,6 +936,22 @@ static void setup(int s)
         chain_config.row[3] = (chain_row_t){{CHAIN_SILENT, 3, 1, CHAIN_SILENT}, 3};
         ui.song_row = 1; ui.song_trk = 2; go_page(GR_MATRIX);
         break;
+    case S_TRACKER: {
+        uint32_t k;
+        song.rec = 0; go_page(GR_TRACKER);
+        for (k = 0; k < 16u; k++) {
+            step_t *st = &TSEL->step[k];
+            st->note[0] = 0; st->n = 0; st->time = ST_REST; st->flags = 0; st->vel = 0;
+            st->hit = 0; st->acc = 0; st->probability = 0;
+        }
+        TSEL->step[0].n = 1; TSEL->step[0].note[0] = 48u; TSEL->step[0].time = ST_NOTE; TSEL->step[0].vel = 100u; TSEL->step[0].flags = SF_ACCENT;
+        TSEL->step[4].n = 1; TSEL->step[4].note[0] = 52u; TSEL->step[4].time = ST_NOTE; TSEL->step[4].vel = 80u;
+        TSEL->step[5].n = 1; TSEL->step[5].note[0] = 55u; TSEL->step[5].time = ST_TIE; TSEL->step[5].flags = SF_SLIDE;
+        TSEL->step[8].n = 1; TSEL->step[8].note[0] = 60u; TSEL->step[8].time = ST_NOTE; TSEL->step[8].vel = 112u;
+        step_set_ratchet(&TSEL->step[8], 3);
+        TSEL->p[P_SLEN] = 16;
+        ui.cursor = 6; ui.bank = 0;
+        break; }
     case S_STEP: song.rec = 1; go_page(GR_ROLL); ui.cursor = 6; break;
     /* 1.2 SEQ > AUTOMATION: a step's CHANCE and RATCH as rows among the locks and events (step 5's CHANCE selected, its
      * value just turned); + ADD CHANCE on step 4; the first row (PLAY ON, the counts, OCT+ CLEAR) */
