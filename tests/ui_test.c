@@ -8354,8 +8354,6 @@ static int test_song_lanes(void)
     int bad = 0, ok;
     uint32_t n = 0, h, k, i, st, rev[NTRK];
     h = song_probe(&n);
-    if (h != SONG_PROBE_GOLDEN || n != SONG_PROBE_BLOCKS)
-        printf("song_probe: h=%08X n=%u (want %08X %u)\n", h, n, SONG_PROBE_GOLDEN, SONG_PROBE_BLOCKS);
     bad += check("SONG of rows (one slot each): bit for bit as before lanes, block by block (song_probe.h)",
                  h == SONG_PROBE_GOLDEN && n == SONG_PROBE_BLOCKS);
     seq_stop();

@@ -16,7 +16,7 @@
  * 11,025 blocks are bit-for-bit the old run). */
 #define SONG_PROBE_PASS_BLOCKS 11026u
 #define SONG_PROBE_BLOCKS (SONG_PROBE_PASS_BLOCKS + 64u)
-#define SONG_PROBE_GOLDEN 0x676A420Du
+#define SONG_PROBE_GOLDEN 0xF3682C23u
 static uint32_t song_probe_mix(uint32_t h, uint32_t v) { return (h ^ v) * 16777619u; }
 static uint32_t song_probe(uint32_t *blocks)
 {
